@@ -173,8 +173,8 @@ export function GiftList() {
       setReservingGiftIds(prev => new Set(prev).add(giftId))
 
       try {
-        // Save reservation with user info
-        const result = await saveReservation(giftId, user.id, user.name, user.hasCompanion)
+        // Save reservation with user info (physical gift)
+        const result = await saveReservation(giftId, user.id, user.name, user.hasCompanion, 'physical')
 
         if (result.success) {
           await loadReservations()
@@ -273,8 +273,9 @@ export function GiftList() {
     }
 
     if (selectedGift) {
-      // Save reservation with user info
-      const result = await saveReservation(selectedGift.id, user.id, user.name, user.hasCompanion)
+      // Save reservation with user info (PIX contribution)
+      const amount = Number.parseFloat(customAmount) || 0
+      const result = await saveReservation(selectedGift.id, user.id, user.name, user.hasCompanion, 'pix', amount)
 
       if (result.success) {
         await loadReservations()
@@ -342,6 +343,7 @@ export function GiftList() {
                   userName: reservation.userName,
                   hasCompanion: reservation.hasCompanion,
                   reservedAt: reservation.reservedAt,
+                  contributionType: reservation.contributionType,
                 } : undefined,
               }}
               isReserved={reservedGifts.has(gift.id)}

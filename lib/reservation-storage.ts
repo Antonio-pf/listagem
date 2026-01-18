@@ -5,7 +5,9 @@ export async function saveReservation(
   giftId: string,
   guestId: string,
   guestName: string,
-  hasCompanion: boolean
+  hasCompanion: boolean,
+  contributionType: 'physical' | 'pix',
+  giftPrice?: number
 ): Promise<{ success: boolean; error?: string }> {
   try {
     const { data, error } = await supabase
@@ -15,6 +17,8 @@ export async function saveReservation(
         guest_id: guestId,
         guest_name: guestName,
         has_companion: hasCompanion,
+        contribution_type: contributionType,
+        gift_price: giftPrice || null,
       })
       .select()
       .single()
@@ -48,6 +52,8 @@ export async function getReservations(): Promise<Reservation[]> {
       userName: r.guest_name,
       hasCompanion: r.has_companion,
       reservedAt: r.reserved_at,
+      contributionType: r.contribution_type,
+      giftPrice: r.gift_price || undefined,
     }))
   } catch (error) {
     console.error("Error loading reservations:", error)
@@ -71,6 +77,8 @@ export async function getReservationByGiftId(giftId: string): Promise<Reservatio
       userName: data.guest_name,
       hasCompanion: data.has_companion,
       reservedAt: data.reserved_at,
+      contributionType: data.contribution_type,
+      giftPrice: data.gift_price || undefined,
     }
   } catch (error) {
     console.error("Error loading reservation:", error)
@@ -93,6 +101,8 @@ export async function getReservationsByUser(guestId: string): Promise<Reservatio
       userName: r.guest_name,
       hasCompanion: r.has_companion,
       reservedAt: r.reserved_at,
+      contributionType: r.contribution_type,
+      giftPrice: r.gift_price || undefined,
     }))
   } catch (error) {
     console.error("Error loading user reservations:", error)

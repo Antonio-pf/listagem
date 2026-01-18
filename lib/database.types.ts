@@ -36,6 +36,8 @@ export interface Database {
           guest_id: string
           guest_name: string
           has_companion: boolean
+          contribution_type: 'physical' | 'pix'
+          gift_price: number | null
           reserved_at: string
         }
         Insert: {
@@ -44,6 +46,8 @@ export interface Database {
           guest_id: string
           guest_name: string
           has_companion?: boolean
+          contribution_type?: 'physical' | 'pix'
+          gift_price?: number | null
           reserved_at?: string
         }
         Update: {
@@ -52,6 +56,8 @@ export interface Database {
           guest_id?: string
           guest_name?: string
           has_companion?: boolean
+          contribution_type?: 'physical' | 'pix'
+          gift_price?: number | null
           reserved_at?: string
         }
       }

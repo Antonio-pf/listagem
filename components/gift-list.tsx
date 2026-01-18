@@ -13,6 +13,7 @@ import { generatePixPayload } from "@/lib/pix-generator"
 import { useToast } from "@/hooks/use-toast"
 import { useAuth } from "@/lib/auth-context"
 import { LoginModal } from "@/components/login-modal"
+import { MessageReminderDialog } from "@/components/message-reminder-dialog"
 import { saveReservation, getReservations, removeReservation, canCancelReservation } from "@/lib/reservation-storage"
 import { supabase } from "@/lib/supabase"
 
@@ -111,11 +112,16 @@ const gifts: Gift[] = [
 
 const categories = ["Todos", "Sala", "Cozinha", "Quarto", "Eletrônicos", "Banheiro", "Outros"]
 
-export function GiftList() {
+interface GiftListProps {
+  onNavigateToMessages?: () => void
+}
+
+export function GiftList({ onNavigateToMessages }: GiftListProps = {}) {
   const [selectedCategory, setSelectedCategory] = useState("Todos")
   const [reservedGifts, setReservedGifts] = useState<Set<string>>(new Set())
   const [pixDialogOpen, setPixDialogOpen] = useState(false)
   const [loginDialogOpen, setLoginDialogOpen] = useState(false)
+  const [messageReminderOpen, setMessageReminderOpen] = useState(false)
   const [selectedGift, setSelectedGift] = useState<Gift | null>(null)
   const [customAmount, setCustomAmount] = useState("")
   const [copied, setCopied] = useState(false)
@@ -196,6 +202,8 @@ export function GiftList() {
             description: "Lembre-se de levar o presente no dia do evento. Sua generosidade significa muito para nós!",
             duration: 7000,
           })
+          // Show message reminder dialog after successful reservation
+          setTimeout(() => setMessageReminderOpen(true), 1500)
         } else {
           // Always refresh to show current state
           await loadReservations()
@@ -299,6 +307,8 @@ export function GiftList() {
           description: `Confirmamos sua contribuição de R$ ${customAmount}. Sua generosidade significa muito para nós!`,
           duration: 7000,
         })
+        // Show message reminder dialog after successful PIX contribution
+        setTimeout(() => setMessageReminderOpen(true), 1500)
       } else {
         // Check if it's a duplicate reservation error
         if (result.error?.includes("já foi reservado")) {
@@ -470,6 +480,17 @@ export function GiftList() {
       </Dialog>
 
       <LoginModal open={loginDialogOpen} onOpenChange={setLoginDialogOpen} />
+      
+      <MessageReminderDialog 
+        open={messageReminderOpen} 
+        onOpenChange={setMessageReminderOpen}
+        onGoToMessages={() => {
+          // Navigate to messages section
+          if (onNavigateToMessages) {
+            onNavigateToMessages()
+          }
+        }}
+      />
     </div>
   )
 }

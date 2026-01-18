@@ -24,9 +24,11 @@ export default function Home() {
     <div className="min-h-screen bg-background">
       <Header activeSection={activeSection} onSectionChange={setActiveSection} />
       <main className="container mx-auto px-4 py-8 md:py-12">
-        {activeSection === "presentes" && <GiftList />}
+        {activeSection === "presentes" && (
+          <GiftList onNavigateToMessages={() => setActiveSection("mensagens")} />
+        )}
         {activeSection === "pix" && <PixSection />}
-        {activeSection === "mensagens" && <MessagesSection />}
+        {activeSection === "mensagens" && <div id="messages-section"><MessagesSection /></div>}
         {activeSection === "sobre" && <AboutSection />}
       </main>
       <LoginModal open={showLoginModal} onOpenChange={setShowLoginModal} />

@@ -2,13 +2,19 @@
 
 import type React from "react"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
-import { MessageCircle, Heart } from "lucide-react"
+import { MessageCircle, Heart, Loader2 } from "lucide-react"
+import { saveMessage, getMessages } from "@/lib/message-storage"
+import { useToast } from "@/hooks/use-toast"
+import { useAuth } from "@/lib/auth-context"
+import type { Database } from "@/lib/database.types"
+
+type DbMessage = Database["public"]["Tables"]["messages"]["Row"]
 
 interface Message {
   id: string
@@ -17,36 +23,109 @@ interface Message {
   date: string
 }
 
-export function MessagesSection() {
-  const [name, setName] = useState("")
-  const [message, setMessage] = useState("")
-  const [messages, setMessages] = useState<Message[]>([
-    {
-      id: "1",
-      name: "Maria Silva",
-      message: "Parabéns pela nova casa! Desejo muita felicidade e amor nesse novo lar.",
-      date: "2 dias atrás",
-    },
-    {
-      id: "2",
-      name: "João Santos",
-      message: "Que essa casa seja repleta de momentos especiais e muitas conquistas. Felicidades!",
-      date: "3 dias atrás",
-    },
-  ])
+function formatMessageDate(dateString: string): string {
+  const date = new Date(dateString)
+  const now = new Date()
+  const diffMs = now.getTime() - date.getTime()
+  const diffMins = Math.floor(diffMs / 60000)
+  const diffHours = Math.floor(diffMs / 3600000)
+  const diffDays = Math.floor(diffMs / 86400000)
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault()
-    if (name.trim() && message.trim()) {
-      const newMessage: Message = {
-        id: Date.now().toString(),
-        name: name.trim(),
-        message: message.trim(),
-        date: "Agora",
+  if (diffMins < 1) return "Agora"
+  if (diffMins < 60) return `${diffMins} min atrás`
+  if (diffHours < 24) return `${diffHours}h atrás`
+  if (diffDays === 1) return "1 dia atrás"
+  if (diffDays < 7) return `${diffDays} dias atrás`
+  
+  return date.toLocaleDateString("pt-BR", { day: "numeric", month: "short" })
+}
+
+export function MessagesSection() {
+  const { user } = useAuth()
+  const [message, setMessage] = useState("")
+  const [messages, setMessages] = useState<Message[]>([])
+  const [isLoading, setIsLoading] = useState(true)
+  const [isSubmitting, setIsSubmitting] = useState(false)
+  const { toast } = useToast()
+
+  // Load messages on component mount
+  useEffect(() => {
+    async function loadMessages() {
+      try {
+        const dbMessages = await getMessages()
+        const formattedMessages: Message[] = dbMessages.map((msg: DbMessage) => ({
+          id: msg.id,
+          name: msg.guest_name,
+          message: msg.message,
+          date: formatMessageDate(msg.created_at),
+        }))
+        setMessages(formattedMessages)
+      } catch (error) {
+        console.error("Error loading messages:", error)
+        toast({
+          title: "Erro ao carregar mensagens",
+          description: "Não foi possível carregar as mensagens. Tente novamente.",
+          variant: "destructive",
+        })
+      } finally {
+        setIsLoading(false)
       }
-      setMessages([newMessage, ...messages])
-      setName("")
-      setMessage("")
+    }
+
+    loadMessages()
+  }, [toast])
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault()
+    if (!user || !message.trim()) return
+
+    setIsSubmitting(true)
+
+    // Optimistic UI update
+    const tempMessage: Message = {
+      id: `temp-${Date.now()}`,
+      name: user.name,
+      message: message.trim(),
+      date: "Agora",
+    }
+    setMessages([tempMessage, ...messages])
+
+    try {
+      const savedMessage = await saveMessage(user.name, message.trim())
+      
+      if (savedMessage) {
+        // Replace temporary message with real one from database
+        setMessages((prev) =>
+          prev.map((msg) =>
+            msg.id === tempMessage.id
+              ? {
+                  id: savedMessage.id,
+                  name: savedMessage.guest_name,
+                  message: savedMessage.message,
+                  date: formatMessageDate(savedMessage.created_at),
+                }
+              : msg
+          )
+        )
+        setMessage("")
+        toast({
+          title: "💝 Mensagem enviada com carinho!",
+          description: "Sua mensagem de carinho foi recebida e está agora no mural do casal. Muito obrigado por compartilhar esse momento especial! 🎉",
+        })
+      } else {
+        throw new Error("Failed to save message")
+      }
+    } catch (error) {
+      console.error("Error saving message:", error)
+      // Remove temporary message on error
+      setMessages((prev) => prev.filter((msg) => msg.id !== tempMessage.id))
+      toast({
+        title: "Erro ao enviar mensagem",
+        description: "Não foi possível salvar sua mensagem. Tente novamente.",
+        variant: "destructive",
+      })
+    } finally {
+      setIsSubmitting(false)
     }
   }
 
@@ -72,17 +151,6 @@ export function MessagesSection() {
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="name">Seu Nome</Label>
-              <Input
-                id="name"
-                placeholder="Digite seu nome"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                required
-                className="bg-background/50"
-              />
-            </div>
-            <div className="space-y-2">
               <Label htmlFor="message">Sua Mensagem</Label>
               <Textarea
                 id="message"
@@ -94,9 +162,18 @@ export function MessagesSection() {
                 className="bg-background/50"
               />
             </div>
-            <Button type="submit" className="w-full gap-2" size="lg">
-              <Heart className="h-4 w-4" />
-              Enviar Mensagem
+            <Button type="submit" className="w-full gap-2" size="lg" disabled={isSubmitting}>
+              {isSubmitting ? (
+                <>
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                  Enviando...
+                </>
+              ) : (
+                <>
+                  <Heart className="h-4 w-4" />
+                  Enviar Mensagem
+                </>
+              )}
             </Button>
           </form>
         </CardContent>

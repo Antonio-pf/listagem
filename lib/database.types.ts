@@ -55,6 +55,26 @@ export interface Database {
           reserved_at?: string
         }
       }
+      messages: {
+        Row: {
+          id: string
+          guest_name: string
+          message: string
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          guest_name: string
+          message: string
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          guest_name?: string
+          message?: string
+          created_at?: string
+        }
+      }
     }
     Views: {
       [_ in never]: never

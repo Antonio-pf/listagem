@@ -55,8 +55,33 @@ FOR INSERT WITH CHECK (true);
 CREATE POLICY "Enable delete for all users" ON reservations
 FOR DELETE USING (true);
 
+-- Create messages table
+CREATE TABLE IF NOT EXISTS messages (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  guest_name TEXT NOT NULL,
+  message TEXT NOT NULL,
+  created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- Create index for faster date-based queries
+CREATE INDEX IF NOT EXISTS idx_messages_created_at ON messages(created_at DESC);
+
+-- Enable Row Level Security
+ALTER TABLE messages ENABLE ROW LEVEL SECURITY;
+
+-- Drop existing policies if they exist
+DROP POLICY IF EXISTS "Enable read access for all users" ON messages;
+DROP POLICY IF EXISTS "Enable insert for all users" ON messages;
+
+-- Create RLS policies for messages
+CREATE POLICY "Enable read access for all users" ON messages
+FOR SELECT USING (true);
+
+CREATE POLICY "Enable insert for all users" ON messages
+FOR INSERT WITH CHECK (true);
+
 -- Verify tables were created
 SELECT 'Setup complete! Tables created:' as status;
 SELECT table_name FROM information_schema.tables 
 WHERE table_schema = 'public' 
-AND table_name IN ('guests', 'reservations');
+AND table_name IN ('guests', 'reservations', 'messages');

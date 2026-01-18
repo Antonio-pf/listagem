@@ -32,6 +32,7 @@ This guide will help you set up Supabase for your gift list application. Supabas
 This script will:
 - Create the `guests` table
 - Create the `reservations` table
+- Create the `messages` table
 - Set up indexes for better performance
 - Configure Row Level Security (RLS) policies
 
@@ -101,12 +102,13 @@ If everything works, you should see the reservation in your Supabase dashboard:
 SELECT table_name 
 FROM information_schema.tables 
 WHERE table_schema = 'public' 
-AND table_name IN ('guests', 'reservations');
+AND table_name IN ('guests', 'reservations', 'messages');
 ```
 
 You should see:
 - guests
 - reservations
+- messages
 
 ### Check Row Level Security
 ```sql
@@ -114,10 +116,10 @@ You should see:
 SELECT tablename, rowsecurity 
 FROM pg_tables 
 WHERE schemaname = 'public' 
-AND tablename IN ('guests', 'reservations');
+AND tablename IN ('guests', 'reservations', 'messages');
 ```
 
-Both tables should have `rowsecurity = true`
+All three tables should have `rowsecurity = true`
 
 ## Troubleshooting
 
@@ -162,6 +164,12 @@ Both tables should have `rowsecurity = true`
 - `guest_name` (TEXT): Denormalized guest name for easier queries
 - `has_companion` (BOOLEAN): Whether guest has a companion
 - `reserved_at` (TIMESTAMP): When the gift was reserved
+
+### messages table
+- `id` (UUID): Primary key
+- `guest_name` (TEXT): Name of person sending message
+- `message` (TEXT): Message content
+- `created_at` (TIMESTAMP): When the message was created
 
 ## Cost Estimate
 

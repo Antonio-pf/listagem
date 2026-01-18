@@ -23,6 +23,7 @@ const gifts: Gift[] = [
     description: "Sofá confortável de 3 lugares com chaise retrátil",
     image: "/modern-grey-sofa.jpg",
     category: "Sala",
+    price: 2500,
     reserved: false,
   },
   {
@@ -31,6 +32,7 @@ const gifts: Gift[] = [
     description: "Conjunto completo de panelas antiaderentes",
     image: "/cookware-set.png",
     category: "Cozinha",
+    price: 450,
     reserved: false,
   },
   {
@@ -39,6 +41,7 @@ const gifts: Gift[] = [
     description: "Smart TV LED 4K com sistema operacional atualizado",
     image: "/smart-tv-screen.jpg",
     category: "Eletrônicos",
+    price: 2800,
     reserved: true,
   },
   {
@@ -47,6 +50,7 @@ const gifts: Gift[] = [
     description: "Jogo de lençol 300 fios com fronhas",
     image: "/bed-sheets-white.jpg",
     category: "Quarto",
+    price: 350,
     reserved: false,
   },
   {
@@ -55,6 +59,7 @@ const gifts: Gift[] = [
     description: "Máquina de café expresso automática",
     image: "/professional-espresso-setup.png",
     category: "Cozinha",
+    price: 1200,
     reserved: false,
   },
   {
@@ -63,6 +68,7 @@ const gifts: Gift[] = [
     description: "Mesa extensível para 6 pessoas em madeira",
     image: "/wooden-dining-table.png",
     category: "Sala",
+    price: 1800,
     reserved: false,
   },
   {
@@ -71,6 +77,7 @@ const gifts: Gift[] = [
     description: "Aspirador inteligente com mapeamento e Wi-Fi",
     image: "/robot-vacuum.jpg",
     category: "Eletrônicos",
+    price: 1500,
     reserved: false,
   },
   {
@@ -79,6 +86,7 @@ const gifts: Gift[] = [
     description: "Conjunto de 6 toalhas 100% algodão",
     image: "/fluffy-bath-towels.png",
     category: "Banheiro",
+    price: 280,
     reserved: false,
   },
   {
@@ -87,6 +95,7 @@ const gifts: Gift[] = [
     description: "Fritadeira elétrica sem óleo 5L",
     image: "/air-fryer-appliance.jpg",
     category: "Cozinha",
+    price: 650,
     reserved: true,
   },
   {
@@ -155,6 +164,10 @@ export function GiftList() {
 
     if (method === "pix") {
       setSelectedGift(gift || null)
+      // Pre-populate with gift price if available
+      if (gift?.price) {
+        setCustomAmount(gift.price.toString())
+      }
       setPixDialogOpen(true)
     } else {
       // Check if already reserved before attempting
@@ -180,7 +193,8 @@ export function GiftList() {
           await loadReservations()
           toast({
             title: `Obrigado! ${gift?.name} reservado ❤️`,
-            description: "Sua generosidade significa muito para nós!",
+            description: "Lembre-se de levar o presente no dia do evento. Sua generosidade significa muito para nós!",
+            duration: 7000,
           })
         } else {
           // Always refresh to show current state
@@ -275,13 +289,15 @@ export function GiftList() {
     if (selectedGift) {
       // Save reservation with user info (PIX contribution)
       const amount = Number.parseFloat(customAmount) || 0
-      const result = await saveReservation(selectedGift.id, user.id, user.name, user.hasCompanion, 'pix', amount)
+      const giftPrice = selectedGift.price || amount
+      const result = await saveReservation(selectedGift.id, user.id, user.name, user.hasCompanion, 'pix', giftPrice)
 
       if (result.success) {
         await loadReservations()
         toast({
-          title: "Obrigado pela contribuição! ❤️",
-          description: `Recebemos sua confirmação de R$ ${customAmount}. Muito obrigado!`,
+          title: "Obrigado pela contribuição via PIX! ❤️",
+          description: `Confirmamos sua contribuição de R$ ${customAmount}. Sua generosidade significa muito para nós!`,
+          duration: 7000,
         })
       } else {
         // Check if it's a duplicate reservation error
@@ -369,12 +385,19 @@ export function GiftList() {
               <Heart className="h-5 w-5 text-accent" fill="currentColor" />
               Contribuir via PIX
             </DialogTitle>
-            <DialogDescription>Defina o valor que deseja contribuir e envie via PIX</DialogDescription>
+            <DialogDescription>
+              {selectedGift?.isOpenValue 
+                ? "Defina o valor que deseja contribuir e envie via PIX"
+                : `Valor estimado: R$ ${selectedGift?.price?.toFixed(2) || '0,00'}`
+              }
+            </DialogDescription>
           </DialogHeader>
 
           <div className="space-y-4 py-4">
             <div className="space-y-2">
-              <Label htmlFor="amount">Valor da Contribuição (R$)</Label>
+              <Label htmlFor="amount">
+                {selectedGift?.isOpenValue ? "Valor da Contribuição (R$)" : "Valor a Contribuir (R$)"}
+              </Label>
               <Input
                 id="amount"
                 type="number"
@@ -383,6 +406,11 @@ export function GiftList() {
                 onChange={(e) => setCustomAmount(e.target.value)}
                 className="bg-background/50"
               />
+              {selectedGift?.price && !selectedGift.isOpenValue && (
+                <p className="text-xs text-muted-foreground">
+                  Valor sugerido: R$ {selectedGift.price.toFixed(2)} (você pode ajustar se preferir)
+                </p>
+              )}
             </div>
 
             <div className="space-y-2">

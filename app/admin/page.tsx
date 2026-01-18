@@ -145,6 +145,8 @@ export default async function AdminDashboard() {
                 <tr className="border-b">
                   <th className="text-left py-2 px-4">ID do Presente</th>
                   <th className="text-left py-2 px-4">Convidado</th>
+                  <th className="text-left py-2 px-4">Tipo</th>
+                  <th className="text-left py-2 px-4">Valor</th>
                   <th className="text-left py-2 px-4">Acompanhante</th>
                   <th className="text-left py-2 px-4">Data</th>
                 </tr>
@@ -154,6 +156,20 @@ export default async function AdminDashboard() {
                   <tr key={reservation.id} className="border-b">
                     <td className="py-2 px-4 font-mono text-sm">{reservation.gift_id}</td>
                     <td className="py-2 px-4">{reservation.guest_name}</td>
+                    <td className="py-2 px-4">
+                      <span className={`text-xs px-2 py-1 rounded ${
+                        reservation.contribution_type === 'pix' 
+                          ? 'bg-green-100 text-green-700' 
+                          : 'bg-blue-100 text-blue-700'
+                      }`}>
+                        {reservation.contribution_type === 'pix' ? 'PIX' : 'Presente Físico'}
+                      </span>
+                    </td>
+                    <td className="py-2 px-4">
+                      {reservation.gift_price 
+                        ? `R$ ${reservation.gift_price.toFixed(2)}` 
+                        : '-'}
+                    </td>
                     <td className="py-2 px-4">{reservation.has_companion ? 'Sim' : 'Não'}</td>
                     <td className="py-2 px-4 text-sm text-muted-foreground">
                       {new Date(reservation.reserved_at).toLocaleString('pt-BR')}

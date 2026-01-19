@@ -135,14 +135,7 @@ export function MessagesSection() {
   return (
     <div className="max-w-3xl mx-auto">
       <div className="mb-8 text-center">
-        <div className="flex items-center justify-center gap-2 mb-3">
-          <h2 className="text-3xl font-serif font-semibold text-foreground">Mensagens de Carinho</h2>
-          {user && !hasUserLeftMessage && (
-            <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-accent/20 border border-accent/30 text-sm font-medium text-accent animate-pulse">
-              ✨ Deixe sua mensagem
-            </span>
-          )}
-        </div>
+        <h2 className="text-3xl font-serif font-semibold text-foreground mb-3">Mensagens de Carinho</h2>
         <p className="text-muted-foreground text-pretty">
           Deixe uma mensagem especial para o casal nesse momento tão importante!
         </p>

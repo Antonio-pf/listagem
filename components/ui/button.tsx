@@ -50,17 +50,32 @@ function Button({
     asChild?: boolean
   }) {
   const Comp = asChild ? Slot : 'button'
-  
-  // Wrap with motion for subtle animations
-  const MotionComp = motion(Comp as any)
+  const [isMounted, setIsMounted] = React.useState(false)
 
+  React.useEffect(() => {
+    setIsMounted(true)
+  }, [])
+
+  // Only use motion on client side after mount
+  if (isMounted) {
+    const MotionComp = motion(Comp as any)
+    return (
+      <MotionComp
+        data-slot="button"
+        className={cn(buttonVariants({ variant, size, className }))}
+        whileHover={{ scale: 1.02 }}
+        whileTap={{ scale: 0.98 }}
+        transition={{ type: 'spring', stiffness: 400, damping: 17 }}
+        {...props}
+      />
+    )
+  }
+
+  // Fallback for SSR
   return (
-    <MotionComp
+    <Comp
       data-slot="button"
       className={cn(buttonVariants({ variant, size, className }))}
-      whileHover={{ scale: 1.02 }}
-      whileTap={{ scale: 0.98 }}
-      transition={{ type: 'spring', stiffness: 400, damping: 17 }}
       {...props}
     />
   )

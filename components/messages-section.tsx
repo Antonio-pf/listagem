@@ -3,6 +3,7 @@
 import type React from "react"
 
 import { useState, useEffect } from "react"
+import { motion } from "framer-motion"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -13,6 +14,8 @@ import { saveMessage, getMessages } from "@/lib/message-storage"
 import { useToast } from "@/hooks/use-toast"
 import { useAuth } from "@/lib/auth-context"
 import type { Database } from "@/lib/database.types"
+import { useScrollAnimation } from "@/hooks/use-scroll-animation"
+import { scrollRevealVariants, staggerContainerVariants, staggerItemVariants } from "@/lib/animation-variants"
 
 type DbMessage = Database["public"]["Tables"]["messages"]["Row"]
 
@@ -132,16 +135,32 @@ export function MessagesSection() {
     }
   }
 
+  const { ref: headerRef, isInView: headerInView } = useScrollAnimation()
+  const { ref: formRef, isInView: formInView } = useScrollAnimation()
+  const { ref: messagesRef, isInView: messagesInView } = useScrollAnimation()
+
   return (
     <div className="max-w-3xl mx-auto">
-      <div className="mb-8 text-center">
+      <motion.div 
+        ref={headerRef}
+        className="mb-8 text-center"
+        variants={scrollRevealVariants}
+        initial="hidden"
+        animate={headerInView ? "visible" : "hidden"}
+      >
         <h2 className="text-3xl font-serif font-semibold text-foreground mb-3">Mensagens de Carinho</h2>
         <p className="text-muted-foreground text-pretty">
           Deixe uma mensagem especial para o casal nesse momento tão importante!
         </p>
-      </div>
+      </motion.div>
 
-      <Card className="mb-8 border-border/60 bg-card/80">
+      <motion.div
+        ref={formRef}
+        variants={scrollRevealVariants}
+        initial="hidden"
+        animate={formInView ? "visible" : "hidden"}
+      >
+        <Card className="mb-8 border-border/60 bg-card/80">
         <CardHeader>
           <CardTitle className="flex items-center gap-2 font-serif">
             <div className="flex h-9 w-9 items-center justify-center rounded-full bg-accent/20 border border-accent/30">
@@ -181,11 +200,19 @@ export function MessagesSection() {
           </form>
         </CardContent>
       </Card>
+      </motion.div>
 
-      <div className="space-y-4">
+      <motion.div 
+        ref={messagesRef}
+        className="space-y-4"
+        variants={staggerContainerVariants}
+        initial="hidden"
+        animate={messagesInView ? "visible" : "hidden"}
+      >
         <h3 className="text-xl font-serif font-semibold text-foreground">Mensagens Recebidas</h3>
         {messages.map((msg) => (
-          <Card key={msg.id} className="border-border/60 bg-card/80">
+          <motion.div key={msg.id} variants={staggerItemVariants}>
+            <Card className="border-border/60 bg-card/80">
             <CardContent className="pt-6">
               <div className="flex items-start gap-3">
                 <div className="flex h-10 w-10 items-center justify-center rounded-full bg-accent/15 border border-accent/20 shrink-0">
@@ -201,8 +228,9 @@ export function MessagesSection() {
               </div>
             </CardContent>
           </Card>
+          </motion.div>
         ))}
-      </div>
+      </motion.div>
     </div>
   )
 }

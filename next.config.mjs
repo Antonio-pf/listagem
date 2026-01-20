@@ -6,6 +6,14 @@ const nextConfig = {
   images: {
     unoptimized: true,
   },
+  // Framer Motion optimization
+  experimental: {
+    optimizePackageImports: ['framer-motion'],
+  },
+  // Improve performance with SWC compiler
+  compiler: {
+    removeConsole: process.env.NODE_ENV === 'production',
+  },
 }
 
 export default nextConfig

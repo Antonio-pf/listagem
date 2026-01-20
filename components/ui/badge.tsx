@@ -1,6 +1,7 @@
 import * as React from 'react'
 import { Slot } from '@radix-ui/react-slot'
 import { cva, type VariantProps } from 'class-variance-authority'
+import { motion } from 'framer-motion'
 
 import { cn } from '@/lib/utils'
 
@@ -33,11 +34,17 @@ function Badge({
 }: React.ComponentProps<'span'> &
   VariantProps<typeof badgeVariants> & { asChild?: boolean }) {
   const Comp = asChild ? Slot : 'span'
+  
+  // Wrap with motion for subtle animations
+  const MotionComp = motion(Comp as any)
 
   return (
-    <Comp
+    <MotionComp
       data-slot="badge"
       className={cn(badgeVariants({ variant }), className)}
+      whileHover={{ scale: 1.05 }}
+      whileTap={{ scale: 0.95 }}
+      transition={{ type: 'spring', stiffness: 400, damping: 20 }}
       {...props}
     />
   )

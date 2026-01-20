@@ -50,9 +50,10 @@ export function GiftCard({ gift, isReserved, currentUser, isReserving, onReserve
           alt={gift.name}
           fill
           className="object-cover transition-transform duration-300 group-hover:scale-105"
+          priority={isReserved}
         />
         {isReserved && (
-          <div className="absolute inset-0 bg-background/80 backdrop-blur-sm flex items-center justify-center">
+          <div className="absolute inset-0 bg-background/80 backdrop-blur-sm flex items-center justify-center z-10">
             <div className="flex flex-col items-center gap-2 text-center px-4">
               <div className="flex h-16 w-16 items-center justify-center rounded-full bg-accent border border-accent/30">
                 <Check className="h-8 w-8 text-accent-foreground" />

@@ -6,6 +6,8 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Badge } from "@/components/ui/badge"
 import { Check, GiftIcon, X, Heart } from "lucide-react"
 import Image from "next/image"
+import { motion } from "framer-motion"
+import { cardHoverVariants } from "@/lib/animation-variants"
 
 interface GiftCardProps {
   gift: Gift
@@ -34,7 +36,14 @@ export function GiftCard({ gift, isReserved, currentUser, isReserving, onReserve
   }
 
   return (
-    <Card className="group overflow-hidden transition-all hover:shadow-lg border-border/60 bg-card/80">
+    <motion.div
+      variants={cardHoverVariants}
+      initial="rest"
+      whileHover="hover"
+      whileTap="tap"
+      transition={{ type: "spring", stiffness: 300, damping: 20 }}
+    >
+      <Card className="group overflow-hidden transition-all hover:shadow-lg border-border/60 bg-card/80">
       <div className="relative aspect-square overflow-hidden bg-muted">
         <Image
           src={gift.image || "/placeholder.svg"}
@@ -174,5 +183,6 @@ export function GiftCard({ gift, isReserved, currentUser, isReserving, onReserve
         )}
       </CardFooter>
     </Card>
+    </motion.div>
   )
 }

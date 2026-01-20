@@ -6,6 +6,8 @@ import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
 import { useState } from "react"
 import { useAuth } from "@/lib/auth-context"
 import { Badge } from "@/components/ui/badge"
+import { motion, AnimatePresence } from "framer-motion"
+import { buttonVariants, navIndicatorVariants, fadeInVariants } from "@/lib/animation-variants"
 
 interface HeaderProps {
   activeSection: string
@@ -34,7 +36,12 @@ export function Header({ activeSection, onSectionChange }: HeaderProps) {
   }
 
   return (
-    <header className="border-b border-border bg-card/80 backdrop-blur-sm sticky top-0 z-10">
+    <motion.header 
+      className="border-b border-border bg-card/80 backdrop-blur-sm sticky top-0 z-10"
+      initial={{ y: -100 }}
+      animate={{ y: 0 }}
+      transition={{ duration: 0.5, ease: [0.4, 0, 0.2, 1] }}
+    >
       <div className="container mx-auto px-4 py-4 md:py-6">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
@@ -47,42 +54,66 @@ export function Header({ activeSection, onSectionChange }: HeaderProps) {
             </div>
           </div>
 
-          <nav className="hidden md:flex items-center gap-1">
+          <nav className="hidden md:flex items-center gap-1 relative">
             {menuItems.map((item) => (
-              <Button
-                key={item.id}
-                variant={activeSection === item.id ? "default" : "ghost"}
-                size="sm"
-                onClick={() => onSectionChange(item.id)}
-                className={`text-sm ${
-                  activeSection === item.id
-                    ? "bg-primary text-primary-foreground"
-                    : "text-foreground hover:bg-secondary/50"
-                }`}
-              >
-                {item.label}
-              </Button>
-            ))}
-            <Heart className="h-5 w-5 text-accent ml-3" fill="currentColor" />
-            {isAuthenticated && user && (
-              <>
-                <div className="flex items-center gap-2 ml-3 px-3 py-1.5 rounded-md bg-secondary/50">
-                  <User className="h-4 w-4 text-muted-foreground" />
-                  <span className="text-sm font-medium">{user.name}</span>
-                  {user.hasCompanion && (
-                    <Badge variant="outline" className="text-xs">+1</Badge>
-                  )}
-                </div>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={handleLogout}
-                  className="text-sm text-muted-foreground hover:text-foreground"
+              <motion.div key={item.id} className="relative">
+                <motion.button
+                  onClick={() => onSectionChange(item.id)}
+                  className={`px-4 py-2 text-sm rounded-md transition-colors ${
+                    activeSection === item.id
+                      ? "text-primary-foreground"
+                      : "text-foreground hover:bg-secondary/50"
+                  }`}
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
                 >
-                  <LogOut className="h-4 w-4" />
-                </Button>
-              </>
-            )}
+                  {item.label}
+                  {activeSection === item.id && (
+                    <motion.div
+                      layoutId="activeIndicator"
+                      className="absolute inset-0 bg-primary rounded-md -z-10"
+                      initial={false}
+                      transition={{ type: "spring", stiffness: 380, damping: 30 }}
+                    />
+                  )}
+                </motion.button>
+              </motion.div>
+            ))}
+            <motion.div
+              animate={{ rotate: [0, 10, -10, 0], scale: [1, 1.1, 1] }}
+              transition={{ duration: 2, repeat: Infinity, repeatDelay: 3 }}
+            >
+              <Heart className="h-5 w-5 text-accent ml-3" fill="currentColor" />
+            </motion.div>
+            <AnimatePresence>
+              {isAuthenticated && user && (
+                <motion.div
+                  initial={{ opacity: 0, x: -20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  exit={{ opacity: 0, x: -20 }}
+                  transition={{ duration: 0.3 }}
+                  className="flex items-center gap-2"
+                >
+                  <div className="flex items-center gap-2 ml-3 px-3 py-1.5 rounded-md bg-secondary/50">
+                    <User className="h-4 w-4 text-muted-foreground" />
+                    <span className="text-sm font-medium">{user.name}</span>
+                    {user.hasCompanion && (
+                      <Badge variant="outline" className="text-xs">+1</Badge>
+                    )}
+                  </div>
+                  <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={handleLogout}
+                      className="text-sm text-muted-foreground hover:text-foreground"
+                    >
+                      <LogOut className="h-4 w-4" />
+                    </Button>
+                  </motion.div>
+                </motion.div>
+              )}
+            </AnimatePresence>
           </nav>
 
           <div className="flex md:hidden items-center gap-2">
@@ -137,6 +168,6 @@ export function Header({ activeSection, onSectionChange }: HeaderProps) {
           </div>
         </div>
       </div>
-    </header>
+    </motion.header>
   )
 }

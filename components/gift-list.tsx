@@ -1,9 +1,11 @@
 "use client"
 
 import { useState, useEffect } from "react"
+import { motion, AnimatePresence } from "framer-motion"
 import { GiftCard } from "@/components/gift-card"
 import { Badge } from "@/components/ui/badge"
 import type { Gift } from "@/lib/types"
+import { staggerContainerVariants, staggerItemVariants, badgeVariants } from "@/lib/animation-variants"
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -140,10 +142,8 @@ export function GiftList({ onNavigateToMessages }: GiftListProps = {}) {
   }
 
   useEffect(() => {
-    // Load reservations from Supabase
     loadReservations()
 
-    // Subscribe to real-time changes
     const subscription = supabase
       .channel("reservations-changes")
       .on("postgres_changes", { event: "*", schema: "public", table: "reservations" }, () => {
@@ -152,7 +152,6 @@ export function GiftList({ onNavigateToMessages }: GiftListProps = {}) {
       })
       .subscribe()
 
-    // Cleanup subscription on unmount
     return () => {
       subscription.unsubscribe()
     }
@@ -338,30 +337,57 @@ export function GiftList({ onNavigateToMessages }: GiftListProps = {}) {
         </p>
       </div>
 
-      <div className="flex flex-wrap items-center justify-center gap-2">
+      <motion.div 
+        className="flex flex-wrap items-center justify-center gap-2"
+        initial="hidden"
+        animate="visible"
+        variants={staggerContainerVariants}
+      >
         {categories.map((category) => (
-          <Badge
-            key={category}
-            variant={selectedCategory === category ? "default" : "outline"}
-            className={`cursor-pointer px-4 py-2 text-sm transition-all hover:scale-105 ${
-              selectedCategory === category
-                ? "bg-primary text-primary-foreground"
-                : "border-border/80 text-muted-foreground hover:bg-secondary/50 hover:text-foreground"
-            }`}
-            onClick={() => setSelectedCategory(category)}
-          >
-            {category}
-          </Badge>
+          <motion.div key={category} variants={staggerItemVariants}>
+            <motion.div
+              variants={badgeVariants}
+              initial="rest"
+              whileHover="hover"
+              whileTap="tap"
+            >
+              <Badge
+                variant={selectedCategory === category ? "default" : "outline"}
+                className={`cursor-pointer px-4 py-2 text-sm transition-all ${
+                  selectedCategory === category
+                    ? "bg-primary text-primary-foreground"
+                    : "border-border/80 text-muted-foreground hover:bg-secondary/50 hover:text-foreground"
+                }`}
+                onClick={() => setSelectedCategory(category)}
+              >
+                {category}
+              </Badge>
+            </motion.div>
+          </motion.div>
         ))}
-      </div>
+      </motion.div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {filteredGifts.map((gift) => {
+      <motion.div 
+        className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
+        initial="hidden"
+        animate="visible"
+        variants={staggerContainerVariants}
+        layout
+      >
+        <AnimatePresence mode="popLayout">
+          {filteredGifts.map((gift, index) => {
           const reservation = reservationsMap.get(gift.id)
           
           return (
-            <GiftCard
+            <motion.div
               key={gift.id}
+              variants={staggerItemVariants}
+              layout
+              initial="hidden"
+              animate="visible"
+              exit={{ opacity: 0, scale: 0.8, transition: { duration: 0.2 } }}
+            >
+              <GiftCard
               gift={{
                 ...gift,
                 reserved: reservedGifts.has(gift.id),
@@ -377,10 +403,12 @@ export function GiftList({ onNavigateToMessages }: GiftListProps = {}) {
               isReserving={reservingGiftIds.has(gift.id)}
               onReserve={handleReserve}
               onCancelReservation={handleCancelReservation}
-            />
+              />
+            </motion.div>
           )
         })}
-      </div>
+        </AnimatePresence>
+      </motion.div>
 
       {filteredGifts.length === 0 && (
         <div className="text-center py-12">

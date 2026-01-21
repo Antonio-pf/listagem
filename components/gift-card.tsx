@@ -8,6 +8,7 @@ import { Check, GiftIcon, X, Heart } from "lucide-react"
 import Image from "next/image"
 import { motion } from "framer-motion"
 import { cardHoverVariants } from "@/lib/animation-variants"
+import { ShoppingLinks } from "@/components/shopping-links"
 
 interface GiftCardProps {
   gift: Gift
@@ -83,16 +84,22 @@ export function GiftCard({ gift, isReserved, currentUser, isReserving, onReserve
         <CardDescription className="leading-relaxed text-pretty">{gift.description}</CardDescription>
       </CardHeader>
 
-      {gift.isOpenValue && (
-        <CardContent>
-          <div className="flex items-center gap-2 text-lg font-medium text-accent">
+      <CardContent>
+        <ShoppingLinks 
+          giftId={gift.id}
+          giftName={gift.name}
+          giftDescription={gift.description}
+          links={gift.shoppingLinks}
+        />
+      </CardContent>
+
+      <CardFooter className="flex flex-col gap-2">
+        {gift.isOpenValue && (
+          <div className="flex items-center gap-2 text-lg font-medium text-accent mb-2">
             <Heart className="h-5 w-5" fill="currentColor" />
             Valor livre
           </div>
-        </CardContent>
-      )}
-
-      <CardFooter className="flex flex-col gap-2">
+        )}
         {isReserved ? (
           <>
             {gift.reservedBy?.userName === currentUser && (

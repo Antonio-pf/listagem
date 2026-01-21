@@ -81,6 +81,67 @@ export interface Database {
           created_at?: string
         }
       }
+      shopping_links: {
+        Row: {
+          id: string
+          gift_id: string
+          store: 'mercado-livre' | 'amazon' | 'magalu'
+          url: string
+          title: string
+          price: number | null
+          image_url: string | null
+          rating: number | null
+          generated_by_ai: boolean
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          gift_id: string
+          store: 'mercado-livre' | 'amazon' | 'magalu'
+          url: string
+          title: string
+          price?: number | null
+          image_url?: string | null
+          rating?: number | null
+          generated_by_ai?: boolean
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          gift_id?: string
+          store?: 'mercado-livre' | 'amazon' | 'magalu'
+          url?: string
+          title?: string
+          price?: number | null
+          image_url?: string | null
+          rating?: number | null
+          generated_by_ai?: boolean
+          created_at?: string
+          updated_at?: string
+        }
+      }
+      rate_limits: {
+        Row: {
+          id: string
+          key: string
+          count: number
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          key: string
+          count?: number
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          key?: string
+          count?: number
+          created_at?: string
+        }
+      }
     }
     Views: {
       [_ in never]: never

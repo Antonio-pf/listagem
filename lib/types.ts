@@ -1,3 +1,17 @@
+export interface ShoppingLink {
+  id: string
+  giftId: string
+  store: 'mercado-livre' | 'amazon' | 'magalu'
+  url: string
+  title: string
+  price?: number
+  imageUrl?: string
+  rating?: number
+  generatedByAI: boolean
+  createdAt: string
+  updatedAt: string
+}
+
 export interface Gift {
   id: string
   name: string
@@ -12,7 +26,8 @@ export interface Gift {
     reservedAt: string
     contributionType: 'physical' | 'pix' // Tipo de contribuição
   }
-  isOpenValue?: boolean 
+  isOpenValue?: boolean
+  shoppingLinks?: ShoppingLink[] // AI-generated shopping links
 }
 
 export interface Reservation {

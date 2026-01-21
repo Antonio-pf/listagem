@@ -98,7 +98,7 @@ export function GiftCard({ gift, isReserved, currentUser, isReserving, onReserve
             {gift.reservedBy?.userName === currentUser && (
               <Button className="w-full gap-2" onClick={handleCancelReservation} variant="destructive">
                 <X className="h-4 w-4" />
-                Cancelar Reserva
+                Mudei de ideia
               </Button>
             )}
           </>
@@ -147,7 +147,7 @@ export function GiftCard({ gift, isReserved, currentUser, isReserving, onReserve
                 ) : (
                   <>
                     <GiftIcon className="h-4 w-4" />
-                    Presentear
+                    Quero dar este presente
                   </>
                 )}
               </Button>

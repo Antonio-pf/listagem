@@ -18,7 +18,7 @@ export async function getGifts(): Promise<Gift[]> {
   const { data, error } = await supabase
     .from("gifts")
     .select("*")
-    .order("created_at", { ascending: true })
+    .order("name", { ascending: true })
 
   if (error) {
     console.error("Error fetching gifts:", error)

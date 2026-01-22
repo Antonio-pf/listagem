@@ -2,6 +2,7 @@ import { getAdminStats, getAllReservations, getAllGuests, getAllMessages, getEve
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Users, Gift, MessageCircle, UserCheck, Armchair, Table2 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
+import Link from 'next/link'
 
 export default async function AdminDashboard() {
   const [stats, reservations, guests, messages, eventResources] = await Promise.all([

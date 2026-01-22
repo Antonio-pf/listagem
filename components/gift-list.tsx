@@ -17,253 +17,8 @@ import { useAuth } from "@/lib/auth-context"
 import { LoginModal } from "@/components/login-modal"
 import { MessageReminderDialog } from "@/components/message-reminder-dialog"
 import { saveReservation, getReservations, removeReservation, canCancelReservation } from "@/lib/reservation-storage"
+import { getGifts } from "@/lib/gifts-storage"
 import { supabase } from "@/lib/supabase"
-
-const gifts: Gift[] = [
-  {
-    id: "1",
-    name: "Liquidificador",
-    description: "Liquidificador potente para preparar vitaminas e receitas",
-    image: "https://images.unsplash.com/photo-1585515320310-259814833e62?w=800&h=600&fit=crop",
-    category: "Cozinha",
-    price: 250,
-    reserved: false,
-  },
-  {
-    id: "2",
-    name: "Kit Talher",
-    description: "Conjunto completo de talheres para 6 pessoas",
-    image: "https://images.unsplash.com/photo-1606787620819-8bdf0c44c293?w=800&h=600&fit=crop",
-    category: "Cozinha",
-    price: 180,
-    reserved: false,
-  },
-  {
-    id: "3",
-    name: "Kit Utensílios Cozinha",
-    description: "Conjunto de utensílios essenciais para cozinha",
-    image: "https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=800&h=600&fit=crop",
-    category: "Cozinha",
-    price: 150,
-    reserved: false,
-  },
-  {
-    id: "4",
-    name: "Cesto de Roupa",
-    description: "Cesto organizador para roupas sujas",
-    image: "https://images.unsplash.com/photo-1610557892470-55d9e80c0bce?w=800&h=600&fit=crop",
-    category: "Quarto",
-    price: 80,
-    reserved: false,
-  },
-  {
-    id: "5",
-    name: "Cesto de Lixo",
-    description: "Lixeira moderna com tampa e pedal",
-    image: "https://images.unsplash.com/photo-1625225233840-695456021cde?w=800&h=600&fit=crop",
-    category: "Cozinha",
-    price: 120,
-    reserved: false,
-  },
-  {
-    id: "6",
-    name: "Kit Toalhas",
-    description: "Conjunto de 6 toalhas de banho macias",
-    image: "https://images.unsplash.com/photo-1615874959474-d609969a20ed?w=800&h=600&fit=crop",
-    category: "Banheiro",
-    price: 200,
-    reserved: false,
-  },
-  {
-    id: "7",
-    name: "Panela de Arroz Elétrica",
-    description: "Panela elétrica automática para arroz perfeito",
-    image: "https://images.unsplash.com/photo-1584990347449-39b9e5d87ddf?w=800&h=600&fit=crop",
-    category: "Cozinha",
-    price: 280,
-    reserved: false,
-  },
-  {
-    id: "8",
-    name: "Toalha de Mesa Redonda",
-    description: "Toalha de mesa elegante para ocasiões especiais",
-    image: "https://images.unsplash.com/photo-1616486029423-aaa4789e8c9a?w=800&h=600&fit=crop",
-    category: "Sala",
-    price: 90,
-    reserved: false,
-  },
-  {
-    id: "9",
-    name: "Jogo de Lençol Casal",
-    description: "Jogo de lençol 100% algodão para casal",
-    image: "https://images.unsplash.com/photo-1631049307264-da0ec9d70304?w=800&h=600&fit=crop",
-    category: "Quarto",
-    price: 220,
-    reserved: false,
-  },
-  {
-    id: "10",
-    name: "Forma Retangular",
-    description: "Forma retangular para assados e bolos",
-    image: "https://images.unsplash.com/photo-1556909114-44e3e70034e2?w=800&h=600&fit=crop",
-    category: "Cozinha",
-    price: 60,
-    reserved: false,
-  },
-  {
-    id: "11",
-    name: "Almofadas",
-    description: "Kit com 4 almofadas decorativas",
-    image: "https://images.unsplash.com/photo-1584100936595-c0654b55a2e2?w=800&h=600&fit=crop",
-    category: "Sala",
-    price: 120,
-    reserved: false,
-  },
-  {
-    id: "12",
-    name: "Abridor de Lata",
-    description: "Abridor de lata manual de qualidade",
-    image: "https://images.unsplash.com/photo-1565557623262-b51c2513a641?w=800&h=600&fit=crop",
-    category: "Cozinha",
-    price: 25,
-    reserved: false,
-  },
-  {
-    id: "13",
-    name: "Aspirador de Pó",
-    description: "Aspirador de pó potente e silencioso",
-    image: "https://images.unsplash.com/photo-1558317374-067fb5f30001?w=800&h=600&fit=crop",
-    category: "Limpeza",
-    price: 450,
-    reserved: false,
-  },
-  {
-    id: "14",
-    name: "Jarra de Suco",
-    description: "Jarra de vidro com tampa para sucos",
-    image: "https://images.unsplash.com/photo-1544145945-35c4e5d68d8c?w=800&h=600&fit=crop",
-    category: "Cozinha",
-    price: 45,
-    reserved: false,
-  },
-  {
-    id: "15",
-    name: "Kit de Potes Vidro",
-    description: "Conjunto de potes de vidro para armazenamento",
-    image: "https://images.unsplash.com/photo-1610557892470-55d9e80c0bce?w=800&h=600&fit=crop",
-    category: "Cozinha",
-    price: 150,
-    reserved: false,
-  },
-  {
-    id: "16",
-    name: "Luminária",
-    description: "Luminária moderna de mesa ou chão",
-    image: "https://images.unsplash.com/photo-1507473885765-e6ed057f782c?w=800&h=600&fit=crop",
-    category: "Sala",
-    price: 180,
-    reserved: false,
-  },
-  {
-    id: "17",
-    name: "Rodo Alumínio",
-    description: "Rodo de alumínio durável para limpeza",
-    image: "https://images.unsplash.com/photo-1563453392212-326f5e854473?w=800&h=600&fit=crop",
-    category: "Limpeza",
-    price: 40,
-    reserved: false,
-  },
-  {
-    id: "18",
-    name: "Mop",
-    description: "Mop giratório com balde para limpeza fácil",
-    image: "https://images.unsplash.com/photo-1585421514738-01798e348b17?w=800&h=600&fit=crop",
-    category: "Limpeza",
-    price: 130,
-    reserved: false,
-  },
-  {
-    id: "19",
-    name: "Pipoqueira",
-    description: "Pipoqueira elétrica para pipoca caseira",
-    image: "https://images.unsplash.com/photo-1578849278619-e73505e9610f?w=800&h=600&fit=crop",
-    category: "Cozinha",
-    price: 95,
-    reserved: false,
-  },
-  {
-    id: "20",
-    name: "Kit Assadeira Pizza",
-    description: "Conjunto de assadeiras para pizza",
-    image: "https://images.unsplash.com/photo-1513104890138-7c749659a591?w=800&h=600&fit=crop",
-    category: "Cozinha",
-    price: 85,
-    reserved: false,
-  },
-  {
-    id: "21",
-    name: "Kit Taças Sobremesa",
-    description: "Conjunto de taças elegantes para sobremesa",
-    image: "https://images.unsplash.com/photo-1567401893414-76b7b1e5a7a5?w=800&h=600&fit=crop",
-    category: "Cozinha",
-    price: 110,
-    reserved: false,
-  },
-  {
-    id: "22",
-    name: "Jogo de Piso para Banheiro",
-    description: "Conjunto de tapetes antiderrapantes para banheiro",
-    image: "https://images.unsplash.com/photo-1620626011761-996317b8d101?w=800&h=600&fit=crop",
-    category: "Banheiro",
-    price: 75,
-    reserved: false,
-  },
-  {
-    id: "23",
-    name: "Kit Faca",
-    description: "Conjunto completo de facas profissionais para cozinha",
-    image: "https://images.unsplash.com/photo-1593618998160-e34014e67546?w=800&h=600&fit=crop",
-    category: "Cozinha",
-    price: 320,
-    reserved: false,
-  },
-  {
-    id: "24",
-    name: "Kit Churrasco",
-    description: "Conjunto completo de utensílios para churrasco",
-    image: "https://images.unsplash.com/photo-1555939594-58d7cb561ad1?w=800&h=600&fit=crop",
-    category: "Cozinha",
-    price: 280,
-    reserved: false,
-  },
-  {
-    id: "25",
-    name: "Kit Passadeira Cozinha",
-    description: "Conjunto de utensílios para passar e organizar a cozinha",
-    image: "https://images.unsplash.com/photo-1556911220-bff31c812dba?w=800&h=600&fit=crop",
-    category: "Cozinha",
-    price: 190,
-    reserved: false,
-  },
-  {
-    id: "26",
-    name: "Umidificador de Ar",
-    description: "Umidificador de ar ultrassônico para ambientes",
-    image: "https://images.unsplash.com/photo-1585771724684-38269d6639fd?w=800&h=600&fit=crop",
-    category: "Quarto",
-    price: 220,
-    reserved: false,
-  },
-  {
-    id: "27",
-    name: "Contribuição Livre",
-    description: "Contribua com o valor que desejar para nos ajudar a mobiliar nossa casa nova",
-    image: "/gift-box-open-present.jpg",
-    category: "Outros",
-    reserved: false,
-    isOpenValue: true,
-  },
-]
 
 const categories = ["Todos", "Sala", "Cozinha", "Quarto", "Banheiro", "Limpeza", "Outros"]
 
@@ -272,6 +27,8 @@ interface GiftListProps {
 }
 
 export function GiftList({ onNavigateToMessages }: GiftListProps = {}) {
+  const [gifts, setGifts] = useState<Gift[]>([])
+  const [loading, setLoading] = useState(true)
   const [selectedCategory, setSelectedCategory] = useState("Todos")
   const [reservedGifts, setReservedGifts] = useState<Set<string>>(new Set())
   const [pixDialogOpen, setPixDialogOpen] = useState(false)
@@ -286,6 +43,13 @@ export function GiftList({ onNavigateToMessages }: GiftListProps = {}) {
   const { toast } = useToast()
   const { user, isAuthenticated } = useAuth()
 
+  const loadGifts = async () => {
+    setLoading(true)
+    const data = await getGifts()
+    setGifts(data)
+    setLoading(false)
+  }
+
   const loadReservations = async () => {
     const reservations = await getReservations()
     const reservedIds = new Set(reservations.map(r => r.giftId))
@@ -295,9 +59,18 @@ export function GiftList({ onNavigateToMessages }: GiftListProps = {}) {
   }
 
   useEffect(() => {
+    loadGifts()
     loadReservations()
 
-    const subscription = supabase
+    const giftsSubscription = supabase
+      .channel("gifts-changes")
+      .on("postgres_changes", { event: "*", schema: "public", table: "gifts" }, () => {
+        // Reload gifts when any change occurs
+        loadGifts()
+      })
+      .subscribe()
+
+    const reservationsSubscription = supabase
       .channel("reservations-changes")
       .on("postgres_changes", { event: "*", schema: "public", table: "reservations" }, () => {
         // Reload reservations when any change occurs
@@ -306,7 +79,8 @@ export function GiftList({ onNavigateToMessages }: GiftListProps = {}) {
       .subscribe()
 
     return () => {
-      subscription.unsubscribe()
+      giftsSubscription.unsubscribe()
+      reservationsSubscription.unsubscribe()
     }
   }, [])
 
@@ -354,10 +128,8 @@ export function GiftList({ onNavigateToMessages }: GiftListProps = {}) {
             description: "Lembre-se de levar o presente no dia do evento. Sua generosidade significa muito para nós!",
             duration: 7000,
           })
-          // Show message reminder dialog after successful reservation
           setTimeout(() => setMessageReminderOpen(true), 1500)
         } else {
-          // Always refresh to show current state
           await loadReservations()
           
           toast({
@@ -367,7 +139,6 @@ export function GiftList({ onNavigateToMessages }: GiftListProps = {}) {
           })
         }
       } finally {
-        // Remove loading state
         setReservingGiftIds(prev => {
           const newSet = new Set(prev)
           newSet.delete(giftId)
@@ -520,15 +291,20 @@ export function GiftList({ onNavigateToMessages }: GiftListProps = {}) {
         ))}
       </motion.div>
 
-      <motion.div 
-        className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
-        initial="hidden"
-        animate="visible"
-        variants={staggerContainerVariants}
-        layout
-      >
-        <AnimatePresence mode="popLayout">
-          {filteredGifts.map((gift, index) => {
+      {loading ? (
+        <div className="text-center py-12">
+          <p className="text-muted-foreground text-lg">Carregando presentes...</p>
+        </div>
+      ) : (
+        <motion.div 
+          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
+          initial="hidden"
+          animate="visible"
+          variants={staggerContainerVariants}
+          layout
+        >
+          <AnimatePresence mode="popLayout">
+            {filteredGifts.map((gift, index) => {
           const reservation = reservationsMap.get(gift.id)
           
           return (
@@ -558,12 +334,13 @@ export function GiftList({ onNavigateToMessages }: GiftListProps = {}) {
               onCancelReservation={handleCancelReservation}
               />
             </motion.div>
-          )
-        })}
-        </AnimatePresence>
-      </motion.div>
+            )
+          })}
+          </AnimatePresence>
+        </motion.div>
+      )}
 
-      {filteredGifts.length === 0 && (
+      {!loading && filteredGifts.length === 0 && (
         <div className="text-center py-12">
           <p className="text-muted-foreground text-lg">Nenhum item encontrado nesta categoria.</p>
         </div>

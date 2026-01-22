@@ -81,6 +81,41 @@ export interface Database {
           created_at?: string
         }
       }
+      gifts: {
+        Row: {
+          id: string
+          name: string
+          description: string
+          image: string
+          category: string
+          price: number | null
+          is_open_value: boolean
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          name: string
+          description: string
+          image: string
+          category: string
+          price?: number | null
+          is_open_value?: boolean
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          name?: string
+          description?: string
+          image?: string
+          category?: string
+          price?: number | null
+          is_open_value?: boolean
+          created_at?: string
+          updated_at?: string
+        }
+      }
     }
     Views: {
       [_ in never]: never

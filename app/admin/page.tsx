@@ -1,6 +1,6 @@
 import { getAdminStats, getAllReservations, getAllGuests, getAllMessages, getEventResources } from '@/lib/admin-data-service'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Users, Gift, MessageCircle, UserCheck, Armchair, Table2 } from 'lucide-react'
+import { Users, Gift, MessageCircle, UserCheck, Armchair, Table2, Download } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import Link from 'next/link'
 
@@ -110,34 +110,17 @@ export default async function AdminDashboard() {
         </CardContent>
       </Card>
 
-      {/* Export Buttons */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Exportar Dados</CardTitle>
-        </CardHeader>
-        <CardContent className="flex flex-wrap gap-2">
-          <form action="/api/admin/export?type=guests&format=csv" method="GET">
-            <Button variant="outline" size="sm" type="submit">
-              Exportar Convidados (CSV)
-            </Button>
-          </form>
-          <form action="/api/admin/export?type=reservations&format=csv" method="GET">
-            <Button variant="outline" size="sm" type="submit">
-              Exportar Reservas (CSV)
-            </Button>
-          </form>
-          <form action="/api/admin/export?type=messages&format=csv" method="GET">
-            <Button variant="outline" size="sm" type="submit">
-              Exportar Mensagens (CSV)
-            </Button>
-          </form>
-        </CardContent>
-      </Card>
-
+      {/* Reservations Table */}
       {/* Reservations Table */}
       <Card>
-        <CardHeader>
+        <CardHeader className="flex flex-row items-center justify-between space-y-0">
           <CardTitle>Reservas Recentes</CardTitle>
+          <form action="/api/admin/export?type=reservations&format=csv" method="GET">
+            <Button variant="outline" size="sm" type="submit">
+              <Download className="h-4 w-4 mr-2" />
+              Exportar CSV
+            </Button>
+          </form>
         </CardHeader>
         <CardContent>
           <div className="overflow-x-auto">
@@ -190,8 +173,14 @@ export default async function AdminDashboard() {
 
       {/* Guests Table */}
       <Card>
-        <CardHeader>
+        <CardHeader className="flex flex-row items-center justify-between space-y-0">
           <CardTitle>Convidados</CardTitle>
+          <form action="/api/admin/export?type=guests&format=csv" method="GET">
+            <Button variant="outline" size="sm" type="submit">
+              <Download className="h-4 w-4 mr-2" />
+              Exportar CSV
+            </Button>
+          </form>
         </CardHeader>
         <CardContent>
           <div className="overflow-x-auto">
@@ -228,8 +217,14 @@ export default async function AdminDashboard() {
 
       {/* Messages Table */}
       <Card>
-        <CardHeader>
+        <CardHeader className="flex flex-row items-center justify-between space-y-0">
           <CardTitle>Mensagens</CardTitle>
+          <form action="/api/admin/export?type=messages&format=csv" method="GET">
+            <Button variant="outline" size="sm" type="submit">
+              <Download className="h-4 w-4 mr-2" />
+              Exportar CSV
+            </Button>
+          </form>
         </CardHeader>
         <CardContent>
           <div className="overflow-x-auto">

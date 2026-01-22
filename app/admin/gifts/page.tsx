@@ -26,6 +26,7 @@ export default function GiftsManagement() {
   const [imageFile, setImageFile] = useState<File | null>(null)
   const [uploading, setUploading] = useState(false)
   const [searchTerm, setSearchTerm] = useState("")
+  const [selectedCategory, setSelectedCategory] = useState<string | null>(null)
   const { toast } = useToast()
 
   const [formData, setFormData] = useState<GiftData>({
@@ -48,17 +49,26 @@ export default function GiftsManagement() {
     setLoading(false)
   }
 
-  // Filter gifts based on search term
+  // Filter gifts based on search term and category
   const filteredGifts = useMemo(() => {
-    if (!searchTerm.trim()) return gifts
+    let filtered = gifts
     
-    const lowerSearch = searchTerm.toLowerCase()
-    return gifts.filter(gift => 
-      gift.name.toLowerCase().includes(lowerSearch) ||
-      gift.description.toLowerCase().includes(lowerSearch) ||
-      gift.category.toLowerCase().includes(lowerSearch)
-    )
-  }, [gifts, searchTerm])
+    // Apply category filter
+    if (selectedCategory) {
+      filtered = filtered.filter(gift => gift.category === selectedCategory)
+    }
+    
+    // Apply search filter
+    if (searchTerm.trim()) {
+      const lowerSearch = searchTerm.toLowerCase()
+      filtered = filtered.filter(gift => 
+        gift.name.toLowerCase().includes(lowerSearch) ||
+        gift.description.toLowerCase().includes(lowerSearch)
+      )
+    }
+    
+    return filtered
+  }, [gifts, searchTerm, selectedCategory])
 
   const handleOpenDialog = (gift?: GiftType) => {
     if (gift) {
@@ -217,20 +227,63 @@ export default function GiftsManagement() {
 
       {/* Search Filter */}
       <Card>
-        <CardContent className="pt-4 sm:pt-6">
+        <CardContent className="pt-4 sm:pt-6 space-y-4">
           <div className="relative">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
             <Input
-              placeholder="Pesquisar por nome, descrição ou categoria..."
+              placeholder="Pesquisar por nome ou descrição..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               className="pl-10 text-sm sm:text-base"
             />
           </div>
-          {searchTerm && (
-            <p className="mt-2 text-xs sm:text-sm text-muted-foreground">
-              {filteredGifts.length} {filteredGifts.length === 1 ? 'presente encontrado' : 'presentes encontrados'}
-            </p>
+          
+          {/* Category Filter Badges */}
+          <div className="space-y-2">
+            <Label className="text-xs sm:text-sm text-muted-foreground">Filtrar por categoria:</Label>
+            <div className="flex flex-wrap gap-2">
+              <Badge
+                variant={selectedCategory === null ? "default" : "outline"}
+                className="cursor-pointer hover:bg-primary/90 text-xs sm:text-sm px-2 sm:px-3 py-1"
+                onClick={() => setSelectedCategory(null)}
+              >
+                Todas ({gifts.length})
+              </Badge>
+              {categories.map((cat) => {
+                const count = gifts.filter(g => g.category === cat).length
+                return (
+                  <Badge
+                    key={cat}
+                    variant={selectedCategory === cat ? "default" : "outline"}
+                    className="cursor-pointer hover:bg-primary/90 text-xs sm:text-sm px-2 sm:px-3 py-1"
+                    onClick={() => setSelectedCategory(cat)}
+                  >
+                    {cat} ({count})
+                  </Badge>
+                )
+              })}
+            </div>
+          </div>
+          
+          {(searchTerm || selectedCategory) && (
+            <div className="flex items-center justify-between">
+              <p className="text-xs sm:text-sm text-muted-foreground">
+                {filteredGifts.length} {filteredGifts.length === 1 ? 'presente encontrado' : 'presentes encontrados'}
+              </p>
+              {(searchTerm || selectedCategory) && (
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => {
+                    setSearchTerm("")
+                    setSelectedCategory(null)
+                  }}
+                  className="text-xs sm:text-sm h-8"
+                >
+                  Limpar filtros
+                </Button>
+              )}
+            </div>
           )}
         </CardContent>
       </Card>
@@ -280,14 +333,25 @@ export default function GiftsManagement() {
         </div>
       )}
 
-      {!loading && searchTerm && filteredGifts.length === 0 && (
+      {!loading && (searchTerm || selectedCategory) && filteredGifts.length === 0 && (
         <Card>
           <CardContent className="py-12">
             <div className="text-center space-y-2">
               <Search className="h-10 w-10 sm:h-12 sm:w-12 mx-auto text-muted-foreground" />
-              <p className="text-sm sm:text-base text-muted-foreground">Nenhum presente encontrado com "{searchTerm}"</p>
-              <Button variant="outline" onClick={() => setSearchTerm("")} className="text-xs sm:text-sm">
-                Limpar pesquisa
+              <p className="text-sm sm:text-base text-muted-foreground">
+                Nenhum presente encontrado
+                {searchTerm && ` com "${searchTerm}"`}
+                {selectedCategory && ` na categoria "${selectedCategory}"`}
+              </p>
+              <Button 
+                variant="outline" 
+                onClick={() => {
+                  setSearchTerm("")
+                  setSelectedCategory(null)
+                }} 
+                className="text-xs sm:text-sm"
+              >
+                Limpar filtros
               </Button>
             </div>
           </CardContent>

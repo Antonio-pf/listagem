@@ -123,40 +123,40 @@ export default async function AdminDashboard() {
             </form>
           )}
         </CardHeader>
-        <CardContent className="px-4 sm:px-6">
-          <div className="overflow-x-auto -mx-4 sm:mx-0">
-            <table className="w-full min-w-[640px]">
+        <CardContent className="px-2 sm:px-6">
+          <div className="overflow-x-auto">
+            <table className="w-full min-w-[700px]">
               <thead>
                 <tr className="border-b">
-                  <th className="text-left py-2 px-2 sm:px-4 text-xs sm:text-sm">ID do Presente</th>
-                  <th className="text-left py-2 px-2 sm:px-4 text-xs sm:text-sm">Convidado</th>
-                  <th className="text-left py-2 px-2 sm:px-4 text-xs sm:text-sm">Tipo</th>
-                  <th className="text-left py-2 px-2 sm:px-4 text-xs sm:text-sm">Valor</th>
-                  <th className="text-left py-2 px-2 sm:px-4 text-xs sm:text-sm hidden md:table-cell">Acompanhante</th>
-                  <th className="text-left py-2 px-2 sm:px-4 text-xs sm:text-sm hidden lg:table-cell">Data</th>
+                  <th className="text-left py-3 px-3 text-xs font-medium text-muted-foreground">ID</th>
+                  <th className="text-left py-3 px-3 text-xs font-medium text-muted-foreground">Convidado</th>
+                  <th className="text-left py-3 px-3 text-xs font-medium text-muted-foreground">Tipo</th>
+                  <th className="text-left py-3 px-3 text-xs font-medium text-muted-foreground">Valor</th>
+                  <th className="text-left py-3 px-3 text-xs font-medium text-muted-foreground hidden md:table-cell">Acompanhante</th>
+                  <th className="text-left py-3 px-3 text-xs font-medium text-muted-foreground hidden lg:table-cell">Data</th>
                 </tr>
               </thead>
               <tbody>
                 {reservations.slice(0, 10).map((reservation) => (
-                  <tr key={reservation.id} className="border-b">
-                    <td className="py-2 px-2 sm:px-4 font-mono text-xs sm:text-sm">{reservation.gift_id.substring(0, 8)}...</td>
-                    <td className="py-2 px-2 sm:px-4 text-xs sm:text-sm">{reservation.guest_name}</td>
-                    <td className="py-2 px-2 sm:px-4">
-                      <span className={`text-[10px] sm:text-xs px-1.5 sm:px-2 py-0.5 sm:py-1 rounded ${
+                  <tr key={reservation.id} className="border-b hover:bg-muted/50">
+                    <td className="py-3 px-3 font-mono text-xs">{reservation.gift_id.substring(0, 8)}...</td>
+                    <td className="py-3 px-3 text-sm">{reservation.guest_name}</td>
+                    <td className="py-3 px-3">
+                      <span className={`text-xs px-2 py-1 rounded-full font-medium ${
                         reservation.contribution_type === 'pix' 
-                          ? 'bg-green-100 text-green-700' 
-                          : 'bg-blue-100 text-blue-700'
+                          ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400' 
+                          : 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400'
                       }`}>
                         {reservation.contribution_type === 'pix' ? 'PIX' : 'Físico'}
                       </span>
                     </td>
-                    <td className="py-2 px-2 sm:px-4 text-xs sm:text-sm">
+                    <td className="py-3 px-3 text-sm font-medium">
                       {reservation.gift_price 
                         ? `R$ ${reservation.gift_price.toFixed(2)}` 
                         : '-'}
                     </td>
-                    <td className="py-2 px-2 sm:px-4 text-xs sm:text-sm hidden md:table-cell">{reservation.has_companion ? 'Sim' : 'Não'}</td>
-                    <td className="py-2 px-2 sm:px-4 text-xs text-muted-foreground hidden lg:table-cell">
+                    <td className="py-3 px-3 text-sm hidden md:table-cell">{reservation.has_companion ? 'Sim' : 'Não'}</td>
+                    <td className="py-3 px-3 text-xs text-muted-foreground hidden lg:table-cell">
                       {new Date(reservation.reserved_at).toLocaleString('pt-BR', { dateStyle: 'short', timeStyle: 'short' })}
                     </td>
                   </tr>
@@ -185,24 +185,24 @@ export default async function AdminDashboard() {
             </form>
           )}
         </CardHeader>
-        <CardContent className="px-4 sm:px-6">
-          <div className="overflow-x-auto -mx-4 sm:mx-0">
-            <table className="w-full min-w-[480px]">
+        <CardContent className="px-2 sm:px-6">
+          <div className="overflow-x-auto">
+            <table className="w-full min-w-[550px]">
               <thead>
                 <tr className="border-b">
-                  <th className="text-left py-2 px-2 sm:px-4 text-xs sm:text-sm">Nome</th>
-                  <th className="text-left py-2 px-2 sm:px-4 text-xs sm:text-sm">Acompanhante</th>
-                  <th className="text-left py-2 px-2 sm:px-4 text-xs sm:text-sm">Reservas</th>
-                  <th className="text-left py-2 px-2 sm:px-4 text-xs sm:text-sm hidden md:table-cell">Data de Registro</th>
+                  <th className="text-left py-3 px-3 text-xs font-medium text-muted-foreground">Nome</th>
+                  <th className="text-left py-3 px-3 text-xs font-medium text-muted-foreground">Acompanhante</th>
+                  <th className="text-left py-3 px-3 text-xs font-medium text-muted-foreground">Reservas</th>
+                  <th className="text-left py-3 px-3 text-xs font-medium text-muted-foreground hidden md:table-cell">Data de Registro</th>
                 </tr>
               </thead>
               <tbody>
                 {guests.map((guest) => (
-                  <tr key={guest.id} className="border-b">
-                    <td className="py-2 px-2 sm:px-4 text-xs sm:text-sm">{guest.name}</td>
-                    <td className="py-2 px-2 sm:px-4 text-xs sm:text-sm">{guest.has_companion ? 'Sim' : 'Não'}</td>
-                    <td className="py-2 px-2 sm:px-4 text-xs sm:text-sm">{guest.reservations_count}</td>
-                    <td className="py-2 px-2 sm:px-4 text-xs text-muted-foreground hidden md:table-cell">
+                  <tr key={guest.id} className="border-b hover:bg-muted/50">
+                    <td className="py-3 px-3 text-sm">{guest.name}</td>
+                    <td className="py-3 px-3 text-sm">{guest.has_companion ? 'Sim' : 'Não'}</td>
+                    <td className="py-3 px-3 text-sm font-medium">{guest.reservations_count}</td>
+                    <td className="py-3 px-3 text-xs text-muted-foreground hidden md:table-cell">
                       {new Date(guest.created_at).toLocaleString('pt-BR', { dateStyle: 'short', timeStyle: 'short' })}
                     </td>
                   </tr>
@@ -231,22 +231,22 @@ export default async function AdminDashboard() {
             </form>
           )}
         </CardHeader>
-        <CardContent className="px-4 sm:px-6">
-          <div className="overflow-x-auto -mx-4 sm:mx-0">
-            <table className="w-full min-w-[480px]">
+        <CardContent className="px-2 sm:px-6">
+          <div className="overflow-x-auto">
+            <table className="w-full min-w-[550px]">
               <thead>
                 <tr className="border-b">
-                  <th className="text-left py-2 px-2 sm:px-4 text-xs sm:text-sm">Nome</th>
-                  <th className="text-left py-2 px-2 sm:px-4 text-xs sm:text-sm">Mensagem</th>
-                  <th className="text-left py-2 px-2 sm:px-4 text-xs sm:text-sm hidden md:table-cell">Data</th>
+                  <th className="text-left py-3 px-3 text-xs font-medium text-muted-foreground">Nome</th>
+                  <th className="text-left py-3 px-3 text-xs font-medium text-muted-foreground">Mensagem</th>
+                  <th className="text-left py-3 px-3 text-xs font-medium text-muted-foreground hidden md:table-cell">Data</th>
                 </tr>
               </thead>
               <tbody>
                 {messages.map((message) => (
-                  <tr key={message.id} className="border-b">
-                    <td className="py-2 px-2 sm:px-4 text-xs sm:text-sm">{message.guest_name}</td>
-                    <td className="py-2 px-2 sm:px-4 text-xs sm:text-sm max-w-[200px] sm:max-w-md truncate">{message.message}</td>
-                    <td className="py-2 px-2 sm:px-4 text-xs text-muted-foreground hidden md:table-cell">
+                  <tr key={message.id} className="border-b hover:bg-muted/50">
+                    <td className="py-3 px-3 text-sm">{message.guest_name}</td>
+                    <td className="py-3 px-3 text-sm max-w-[200px] sm:max-w-md truncate">{message.message}</td>
+                    <td className="py-3 px-3 text-xs text-muted-foreground hidden md:table-cell">
                       {new Date(message.created_at).toLocaleString('pt-BR', { dateStyle: 'short', timeStyle: 'short' })}
                     </td>
                   </tr>

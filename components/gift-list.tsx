@@ -19,6 +19,7 @@ import { MessageReminderDialog } from "@/components/message-reminder-dialog"
 import { saveReservation, getReservations, removeReservation, canCancelReservation } from "@/lib/reservation-storage"
 import { getGifts } from "@/lib/gifts-storage"
 import { supabase } from "@/lib/supabase"
+import { CategoryFilter } from "@/components/category-filter"
 
 const categories = ["Todos", "Sala", "Cozinha", "Quarto", "Banheiro", "Limpeza", "Outros"]
 
@@ -267,28 +268,17 @@ export function GiftList({ onNavigateToMessages }: GiftListProps = {}) {
         animate="visible"
         variants={staggerContainerVariants}
       >
-        {categories.map((category) => (
-          <motion.div key={category} variants={staggerItemVariants}>
-            <motion.div
-              variants={badgeVariants}
-              initial="rest"
-              whileHover="hover"
-              whileTap="tap"
-            >
-              <Badge
-                variant={selectedCategory === category ? "default" : "outline"}
-                className={`cursor-pointer px-4 py-2 text-sm transition-all ${
-                  selectedCategory === category
-                    ? "bg-primary text-primary-foreground"
-                    : "border-border/80 text-muted-foreground hover:bg-secondary/50 hover:text-foreground"
-                }`}
-                onClick={() => setSelectedCategory(category)}
-              >
-                {category}
-              </Badge>
-            </motion.div>
-          </motion.div>
-        ))}
+        <CategoryFilter
+          categories={categories.filter(c => c !== "Todos")}
+          selectedCategory={selectedCategory === "Todos" ? null : selectedCategory}
+          categoryCounts={categories.filter(c => c !== "Todos").reduce((acc, cat) => {
+            acc[cat] = gifts.filter(g => g.category === cat).length
+            return acc
+          }, {} as Record<string, number>)}
+          totalCount={gifts.length}
+          onSelectCategory={(category) => setSelectedCategory(category || "Todos")}
+          showLabel={false}
+        />
       </motion.div>
 
       {loading ? (

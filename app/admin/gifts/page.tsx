@@ -9,11 +9,13 @@ import { Textarea } from "@/components/ui/textarea"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import { Badge } from "@/components/ui/badge"
-import { Gift, Plus, Pencil, Trash2, Upload, Link as LinkIcon, ArrowLeft, Search } from "lucide-react"
+import { Gift, Plus, Pencil, Trash2, Upload, Link as LinkIcon, ArrowLeft, Search, ArrowUpDown, Sofa, ChefHat, Bed, Bath, Sparkles, Package } from "lucide-react"
 import { getGifts, createGift, updateGift, deleteGift, uploadGiftImage, type GiftData } from "@/lib/gifts-storage"
 import type { Gift as GiftType } from "@/lib/types"
 import { useToast } from "@/hooks/use-toast"
 import Link from "next/link"
+import { GiftDisplayCard } from "@/components/gift-display-card"
+import { CategoryFilter } from "@/components/category-filter"
 
 const categories = ["Sala", "Cozinha", "Quarto", "Banheiro", "Limpeza", "Outros"]
 
@@ -228,7 +230,7 @@ export default function GiftsManagement() {
       {/* Search Filter */}
       <Card>
         <CardContent className="pt-4 sm:pt-6 space-y-4">
-          <div className="relative">
+          <div className="relative flex-1">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
             <Input
               placeholder="Pesquisar por nome ou descrição..."
@@ -239,31 +241,16 @@ export default function GiftsManagement() {
           </div>
           
           {/* Category Filter Badges */}
-          <div className="space-y-2">
-            <Label className="text-xs sm:text-sm text-muted-foreground">Filtrar por categoria:</Label>
-            <div className="flex flex-wrap gap-2">
-              <Badge
-                variant={selectedCategory === null ? "default" : "outline"}
-                className="cursor-pointer hover:bg-primary/90 text-xs sm:text-sm px-2 sm:px-3 py-1"
-                onClick={() => setSelectedCategory(null)}
-              >
-                Todas ({gifts.length})
-              </Badge>
-              {categories.map((cat) => {
-                const count = gifts.filter(g => g.category === cat).length
-                return (
-                  <Badge
-                    key={cat}
-                    variant={selectedCategory === cat ? "default" : "outline"}
-                    className="cursor-pointer hover:bg-primary/90 text-xs sm:text-sm px-2 sm:px-3 py-1"
-                    onClick={() => setSelectedCategory(cat)}
-                  >
-                    {cat} ({count})
-                  </Badge>
-                )
-              })}
-            </div>
-          </div>
+          <CategoryFilter
+            categories={categories}
+            selectedCategory={selectedCategory}
+            categoryCounts={categories.reduce((acc, cat) => {
+              acc[cat] = gifts.filter(g => g.category === cat).length
+              return acc
+            }, {} as Record<string, number>)}
+            totalCount={gifts.length}
+            onSelectCategory={setSelectedCategory}
+          />
           
           {(searchTerm || selectedCategory) && (
             <div className="flex items-center justify-between">
@@ -297,38 +284,20 @@ export default function GiftsManagement() {
       ) : (
         <div className="grid gap-3 sm:gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
           {filteredGifts.map((gift) => (
-            <Card key={gift.id} className="overflow-hidden">
-              <div className="relative h-40 sm:h-48 bg-muted">
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
-                  src={gift.image}
-                  alt={gift.name}
-                  className="w-full h-full object-cover"
-                />
-              </div>
-              <CardHeader className="p-3 sm:p-6">
-                <CardTitle className="flex items-start justify-between gap-2 text-sm sm:text-base">
-                  <span className="line-clamp-1">{gift.name}</span>
-                  <Badge variant="outline" className="text-xs flex-shrink-0">{gift.category}</Badge>
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-3 p-3 sm:p-6 pt-0">
-                <p className="text-xs sm:text-sm text-muted-foreground line-clamp-2">{gift.description}</p>
-                <div className="flex items-center justify-between gap-2">
-                  <span className="text-sm sm:text-lg font-bold">
-                    {gift.isOpenValue ? "Valor livre" : `R$ ${gift.price?.toFixed(2)}`}
-                  </span>
-                  <div className="flex gap-1 sm:gap-2">
-                    <Button size="sm" variant="outline" onClick={() => handleOpenDialog(gift)} className="h-8 w-8 p-0">
-                      <Pencil className="h-3 w-3 sm:h-4 sm:w-4" />
-                    </Button>
-                    <Button size="sm" variant="outline" onClick={() => handleDelete(gift)} className="h-8 w-8 p-0">
-                      <Trash2 className="h-3 w-3 sm:h-4 sm:w-4" />
-                    </Button>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
+            <GiftDisplayCard 
+              key={gift.id}
+              gift={gift}
+              actions={
+                <>
+                  <Button size="sm" variant="outline" onClick={() => handleOpenDialog(gift)} className="h-8 w-8 p-0">
+                    <Pencil className="h-3 w-3 sm:h-4 sm:w-4" />
+                  </Button>
+                  <Button size="sm" variant="outline" onClick={() => handleDelete(gift)} className="h-8 w-8 p-0">
+                    <Trash2 className="h-3 w-3 sm:h-4 sm:w-4" />
+                  </Button>
+                </>
+              }
+            />
           ))}
         </div>
       )}

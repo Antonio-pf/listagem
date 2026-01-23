@@ -4,10 +4,19 @@ import type { Gift } from "@/lib/types"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
-import { Check, GiftIcon, X, Heart } from "lucide-react"
+import { Check, GiftIcon, X, Heart, Sofa, ChefHat, Bed, Bath, Sparkles, Package } from "lucide-react"
 import Image from "next/image"
 import { motion } from "framer-motion"
 import { cardHoverVariants } from "@/lib/animation-variants"
+
+const categoryConfig = {
+  "Sala": { icon: Sofa, color: "bg-blue-100 text-blue-700 border-blue-200" },
+  "Cozinha": { icon: ChefHat, color: "bg-orange-100 text-orange-700 border-orange-200" },
+  "Quarto": { icon: Bed, color: "bg-purple-100 text-purple-700 border-purple-200" },
+  "Banheiro": { icon: Bath, color: "bg-teal-100 text-teal-700 border-teal-200" },
+  "Limpeza": { icon: Sparkles, color: "bg-red-100 text-red-700 border-red-200" },
+  "Outros": { icon: Package, color: "bg-gray-100 text-gray-700 border-gray-200" },
+}
 
 interface GiftCardProps {
   gift: Gift
@@ -43,8 +52,8 @@ export function GiftCard({ gift, isReserved, currentUser, isReserving, onReserve
       whileTap="tap"
       transition={{ type: "spring", stiffness: 300, damping: 20 }}
     >
-      <Card className="group overflow-hidden transition-all hover:shadow-lg border-border/60 bg-card/80">
-      <div className="relative aspect-square overflow-hidden bg-muted">
+      <Card className="group overflow-hidden transition-all hover:shadow-lg border-border/60 bg-card/80 p-0">
+      <div className="relative h-58 sm:h-100 bg-muted overflow-hidden">
         <Image
           src={gift.image || "/placeholder.svg"}
           alt={gift.name}
@@ -52,6 +61,18 @@ export function GiftCard({ gift, isReserved, currentUser, isReserving, onReserve
           className="object-cover transition-transform duration-300 group-hover:scale-105"
           priority={isReserved}
         />
+        <Badge 
+          className={`absolute top-2 right-2 text-xs font-semibold flex items-center gap-1 border shadow-sm ${
+            categoryConfig[gift.category as keyof typeof categoryConfig]?.color || 'bg-gray-100 text-gray-700 border-gray-200'
+          }`}
+        >
+          {(() => {
+            const config = categoryConfig[gift.category as keyof typeof categoryConfig]
+            const Icon = config?.icon || Package
+            return <Icon className="h-3 w-3" />
+          })()}
+          {gift.category}
+        </Badge>
         {isReserved && (
           <div className="absolute inset-0 bg-background/80 backdrop-blur-sm flex items-center justify-center z-10">
             <div className="flex flex-col items-center gap-2 text-center px-4">
@@ -73,26 +94,18 @@ export function GiftCard({ gift, isReserved, currentUser, isReserving, onReserve
         )}
       </div>
 
-      <CardHeader className="space-y-2">
-        <div className="flex items-start justify-between gap-2">
-          <CardTitle className="text-xl leading-tight text-balance font-serif text-foreground">{gift.name}</CardTitle>
-          <Badge variant="outline" className="shrink-0 border-border/80 text-muted-foreground">
-            {gift.category}
-          </Badge>
-        </div>
-        <CardDescription className="leading-relaxed text-pretty">{gift.description}</CardDescription>
-      </CardHeader>
-
-      {gift.isOpenValue && (
-        <CardContent>
+      <div className="p-3 sm:p-4 space-y-3">
+        <h3 className="text-xl leading-tight text-balance font-serif text-foreground font-semibold">{gift.name}</h3>
+        <p className="text-sm leading-relaxed text-pretty text-muted-foreground">{gift.description}</p>
+        
+        {gift.isOpenValue && (
           <div className="flex items-center gap-2 text-lg font-medium text-accent">
             <Heart className="h-5 w-5" fill="currentColor" />
             Valor livre
           </div>
-        </CardContent>
-      )}
+        )}
 
-      <CardFooter className="flex flex-col gap-2">
+        <div className="flex flex-col gap-2 pt-2">
         {isReserved ? (
           <>
             {gift.reservedBy?.userName === currentUser && (
@@ -154,7 +167,8 @@ export function GiftCard({ gift, isReserved, currentUser, isReserving, onReserve
             )}
           </>
         )}
-      </CardFooter>
+        </div>
+      </div>
     </Card>
     </motion.div>
   )

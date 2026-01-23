@@ -5,9 +5,10 @@ import { jwtVerify } from 'jose'
 const secret = new TextEncoder().encode(process.env.ADMIN_SESSION_SECRET)
 
 export async function middleware(request: NextRequest) {
-  // Only protect /admin routes except /admin/login
+  // Only protect /admin routes except /admin/login and /api/admin/*
   if (request.nextUrl.pathname.startsWith('/admin') && 
-      !request.nextUrl.pathname.startsWith('/admin/login')) {
+      !request.nextUrl.pathname.startsWith('/admin/login') &&
+      !request.nextUrl.pathname.startsWith('/api/admin')) {
     
     const token = request.cookies.get('admin-session')?.value
 

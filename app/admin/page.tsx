@@ -1,8 +1,7 @@
 import { getAdminStats, getAllReservations, getAllGuests, getAllMessages, getEventResources } from '@/lib/admin-data-service'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Users, Gift, MessageCircle, UserCheck, Armchair, Table2, Download } from 'lucide-react'
-import { Button } from '@/components/ui/button'
-import Link from 'next/link'
+import { Users, Gift, MessageCircle, UserCheck, Armchair, Table2 } from 'lucide-react'
+import { ExportButton } from '@/components/export-button'
 
 export default async function AdminDashboard() {
   const [stats, reservations, guests, messages, eventResources] = await Promise.all([
@@ -116,12 +115,7 @@ export default async function AdminDashboard() {
         <CardHeader className="flex flex-col sm:flex-row items-start sm:items-center justify-between space-y-2 sm:space-y-0 px-4 sm:px-6">
           <CardTitle className="text-base sm:text-lg font-serif">Reservas Recentes</CardTitle>
           {reservations.length > 0 && (
-            <form action="/api/admin/export?type=reservations&format=csv" method="GET">
-              <Button variant="outline" size="sm" type="submit" className="w-full sm:w-auto">
-                <Download className="h-3 w-3 sm:h-4 sm:w-4 mr-2" />
-                <span className="text-xs sm:text-sm">Exportar CSV</span>
-              </Button>
-            </form>
+            <ExportButton type="reservations" className="w-full sm:w-auto" />
           )}
         </CardHeader>
         <CardContent className="px-2 sm:px-6">
@@ -178,12 +172,7 @@ export default async function AdminDashboard() {
         <CardHeader className="flex flex-col sm:flex-row items-start sm:items-center justify-between space-y-2 sm:space-y-0 px-4 sm:px-6">
           <CardTitle className="text-base sm:text-lg font-serif">Convidados</CardTitle>
           {guests.length > 0 && (
-            <form action="/api/admin/export?type=guests&format=csv" method="GET">
-              <Button variant="outline" size="sm" type="submit" className="w-full sm:w-auto">
-                <Download className="h-3 w-3 sm:h-4 sm:w-4 mr-2" />
-                <span className="text-xs sm:text-sm">Exportar CSV</span>
-              </Button>
-            </form>
+            <ExportButton type="guests" className="w-full sm:w-auto" />
           )}
         </CardHeader>
         <CardContent className="px-2 sm:px-6">
@@ -224,12 +213,7 @@ export default async function AdminDashboard() {
         <CardHeader className="flex flex-col sm:flex-row items-start sm:items-center justify-between space-y-2 sm:space-y-0 px-4 sm:px-6">
           <CardTitle className="text-base sm:text-lg font-serif">Mensagens</CardTitle>
           {messages.length > 0 && (
-            <form action="/api/admin/export?type=messages&format=csv" method="GET">
-              <Button variant="outline" size="sm" type="submit" className="w-full sm:w-auto">
-                <Download className="h-3 w-3 sm:h-4 sm:w-4 mr-2" />
-                <span className="text-xs sm:text-sm">Exportar CSV</span>
-              </Button>
-            </form>
+            <ExportButton type="messages" className="w-full sm:w-auto" />
           )}
         </CardHeader>
         <CardContent className="px-2 sm:px-6">

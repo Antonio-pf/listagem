@@ -24,6 +24,7 @@ export interface GuestDetail {
   has_companion: boolean
   created_at: string
   reservations_count: number
+  gifts: string[]
 }
 
 export interface MessageDetail {
@@ -113,22 +114,40 @@ export async function getAllGuests(): Promise<GuestDetail[]> {
 
     if (guestsError) throw guestsError
 
-    // Get reservation counts for each guest
-    const guestsWithCounts = await Promise.all(
-      (guests || []).map(async (guest) => {
-        const { count } = await supabase
+    // Get reservation counts and gift names for each guest
+    const guestsWithDetails: GuestDetail[] = await Promise.all(
+      (guests || []).map(async (guest: any) => {
+        const { data: reservations, count } = await supabase
           .from('reservations')
-          .select('*', { count: 'exact', head: true })
+          .select('gift_id', { count: 'exact' })
           .eq('guest_id', guest.id)
 
+        // Get gift names for each reservation
+        const gifts: string[] = []
+        if (reservations && reservations.length > 0) {
+          const giftIds = reservations.map((r: any) => r.gift_id)
+          const { data: giftData } = await supabase
+            .from('gifts')
+            .select('id, name')
+            .in('id', giftIds)
+          
+          if (giftData) {
+            gifts.push(...giftData.map((g: any) => g.name))
+          }
+        }
+
         return {
-          ...guest,
-          reservations_count: count || 0
+          id: guest.id,
+          name: guest.name,
+          has_companion: guest.has_companion,
+          created_at: guest.created_at,
+          reservations_count: count || 0,
+          gifts
         }
       })
     )
 
-    return guestsWithCounts
+    return guestsWithDetails
   } catch (error) {
     console.error('Error fetching guests:', error)
     throw error

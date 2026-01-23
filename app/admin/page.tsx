@@ -127,7 +127,6 @@ export default async function AdminDashboard() {
             <table className="w-full min-w-[700px]">
               <thead>
                 <tr className="border-b">
-                  <th className="text-left py-3 px-3 text-xs font-medium text-muted-foreground">ID</th>
                   <th className="text-left py-3 px-3 text-xs font-medium text-muted-foreground">Convidado</th>
                   <th className="text-left py-3 px-3 text-xs font-medium text-muted-foreground">Tipo</th>
                   <th className="text-left py-3 px-3 text-xs font-medium text-muted-foreground">Valor</th>
@@ -138,7 +137,6 @@ export default async function AdminDashboard() {
               <tbody>
                 {reservations.slice(0, 10).map((reservation) => (
                   <tr key={reservation.id} className="border-b hover:bg-muted/50">
-                    <td className="py-3 px-3 font-mono text-xs">{reservation.gift_id.substring(0, 8)}...</td>
                     <td className="py-3 px-3 text-sm">{reservation.guest_name}</td>
                     <td className="py-3 px-3">
                       <span className={`text-xs px-2 py-1 rounded-full font-medium ${
@@ -186,7 +184,7 @@ export default async function AdminDashboard() {
                 <tr className="border-b">
                   <th className="text-left py-3 px-3 text-xs font-medium text-muted-foreground">Nome</th>
                   <th className="text-left py-3 px-3 text-xs font-medium text-muted-foreground">Acompanhante</th>
-                  <th className="text-left py-3 px-3 text-xs font-medium text-muted-foreground">Reservas</th>
+                  <th className="text-left py-3 px-3 text-xs font-medium text-muted-foreground">Presentes</th>
                   <th className="text-left py-3 px-3 text-xs font-medium text-muted-foreground hidden md:table-cell">Data de Registro</th>
                 </tr>
               </thead>
@@ -195,7 +193,19 @@ export default async function AdminDashboard() {
                   <tr key={guest.id} className="border-b hover:bg-muted/50">
                     <td className="py-3 px-3 text-sm">{guest.name}</td>
                     <td className="py-3 px-3 text-sm">{guest.has_companion ? 'Sim' : 'Não'}</td>
-                    <td className="py-3 px-3 text-sm font-medium">{guest.reservations_count}</td>
+                    <td className="py-3 px-3 text-sm">
+                      {guest.gifts.length > 0 ? (
+                        <div className="flex flex-col gap-1">
+                          {guest.gifts.map((gift, idx) => (
+                            <span key={idx} className="text-xs px-2 py-1 bg-indigo-100 text-indigo-700 dark:bg-indigo-900/30 dark:text-indigo-400 rounded-full inline-block">
+                              {gift}
+                            </span>
+                          ))}
+                        </div>
+                      ) : (
+                        <span className="text-xs text-muted-foreground">-</span>
+                      )}
+                    </td>
                     <td className="py-3 px-3 text-xs text-muted-foreground hidden md:table-cell">
                       {new Date(guest.created_at).toLocaleString('pt-BR', { dateStyle: 'short', timeStyle: 'short' })}
                     </td>

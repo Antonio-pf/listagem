@@ -3,6 +3,10 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Users, Gift, MessageCircle, UserCheck, Armchair, Table2 } from 'lucide-react'
 import { ExportButton } from '@/components/export-button'
 
+// Disable caching for real-time data updates
+export const dynamic = 'force-dynamic'
+export const revalidate = 0
+
 export default async function AdminDashboard() {
   const [stats, reservations, guests, messages, eventResources] = await Promise.all([
     getAdminStats(),

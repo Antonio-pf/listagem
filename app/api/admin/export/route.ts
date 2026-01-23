@@ -6,6 +6,10 @@ import {
   convertToCSV 
 } from '@/lib/admin-data-service'
 
+// Disable caching for real-time data exports
+export const dynamic = 'force-dynamic'
+export const revalidate = 0
+
 export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url)
@@ -27,17 +31,17 @@ export async function GET(request: NextRequest) {
     switch (type) {
       case 'guests':
         data = await getAllGuests()
-        headers = ['name', 'has_companion', 'created_at', 'reservations_count']
+        headers = ['id', 'name', 'has_companion', 'created_at', 'reservations_count']
         filename = `convidados-${Date.now()}`
         break
       case 'reservations':
         data = await getAllReservations()
-        headers = ['gift_id', 'guest_name', 'has_companion', 'reserved_at']
+        headers = ['id', 'gift_id', 'guest_name', 'has_companion', 'contribution_type', 'gift_price', 'reserved_at']
         filename = `reservas-${Date.now()}`
         break
       case 'messages':
         data = await getAllMessages()
-        headers = ['name', 'message', 'is_visible', 'created_at']
+        headers = ['id', 'guest_name', 'message', 'created_at']
         filename = `mensagens-${Date.now()}`
         break
     }

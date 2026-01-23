@@ -73,9 +73,10 @@ export default async function AdminDashboard() {
       {/* Event Resources Card */}
       <Card className="border-l-4 border-l-indigo-500">
         <CardHeader className="px-4 sm:px-6">
-          <CardTitle className="flex items-center gap-2 text-base sm:text-lg">
+          <CardTitle className="flex items-center gap-2 text-base sm:text-lg font-serif">
             <Table2 className="h-4 w-4 sm:h-5 sm:w-5 text-indigo-500" />
-            Relatório de Recursos do Evento
+            <span className="hidden sm:inline">Relatório de Recursos do Evento</span>
+            <span className="sm:hidden">Recursos do Evento</span>
           </CardTitle>
         </CardHeader>
         <CardContent className="px-4 sm:px-6">
@@ -113,7 +114,7 @@ export default async function AdminDashboard() {
       {/* Reservations Table */}
       <Card>
         <CardHeader className="flex flex-col sm:flex-row items-start sm:items-center justify-between space-y-2 sm:space-y-0 px-4 sm:px-6">
-          <CardTitle className="text-base sm:text-lg">Reservas Recentes</CardTitle>
+          <CardTitle className="text-base sm:text-lg font-serif">Reservas Recentes</CardTitle>
           {reservations.length > 0 && (
             <form action="/api/admin/export?type=reservations&format=csv" method="GET">
               <Button variant="outline" size="sm" type="submit" className="w-full sm:w-auto">
@@ -175,7 +176,7 @@ export default async function AdminDashboard() {
       {/* Guests Table */}
       <Card>
         <CardHeader className="flex flex-col sm:flex-row items-start sm:items-center justify-between space-y-2 sm:space-y-0 px-4 sm:px-6">
-          <CardTitle className="text-base sm:text-lg">Convidados</CardTitle>
+          <CardTitle className="text-base sm:text-lg font-serif">Convidados</CardTitle>
           {guests.length > 0 && (
             <form action="/api/admin/export?type=guests&format=csv" method="GET">
               <Button variant="outline" size="sm" type="submit" className="w-full sm:w-auto">
@@ -221,7 +222,7 @@ export default async function AdminDashboard() {
       {/* Messages Table */}
       <Card>
         <CardHeader className="flex flex-col sm:flex-row items-start sm:items-center justify-between space-y-2 sm:space-y-0 px-4 sm:px-6">
-          <CardTitle className="text-base sm:text-lg">Mensagens</CardTitle>
+          <CardTitle className="text-base sm:text-lg font-serif">Mensagens</CardTitle>
           {messages.length > 0 && (
             <form action="/api/admin/export?type=messages&format=csv" method="GET">
               <Button variant="outline" size="sm" type="submit" className="w-full sm:w-auto">

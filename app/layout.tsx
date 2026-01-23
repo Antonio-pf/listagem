@@ -6,9 +6,19 @@ import { AuthProvider } from "@/lib/auth-context"
 import { Toaster } from "@/components/ui/toaster"
 import "./globals.css"
 
-const _geist = Geist({ subsets: ["latin"] })
-const _geistMono = Geist_Mono({ subsets: ["latin"] })
-const _playfair = Playfair_Display({ subsets: ["latin"], weight: ["400", "500", "600", "700"] })
+const geistSans = Geist({ 
+  subsets: ["latin"],
+  variable: "--font-geist-sans"
+})
+const geistMono = Geist_Mono({ 
+  subsets: ["latin"],
+  variable: "--font-geist-mono"
+})
+const playfairDisplay = Playfair_Display({ 
+  subsets: ["latin"], 
+  weight: ["400", "500", "600", "700"],
+  variable: "--font-playfair-display"
+})
 
 export const metadata: Metadata = {
   title: "Chá de Casa Nova",
@@ -40,7 +50,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`font-sans antialiased`}>
+      <body className={`${geistSans.variable} ${geistMono.variable} ${playfairDisplay.variable} font-sans antialiased`}>
         <AuthProvider>
           {children}
           <Toaster />

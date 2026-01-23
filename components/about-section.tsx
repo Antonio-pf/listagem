@@ -40,7 +40,7 @@ export function AboutSection() {
               <div>
                 <h3 className="text-xl font-serif font-semibold mb-2 text-foreground">Nossa História</h3>
                 <p className="text-muted-foreground text-pretty leading-relaxed">
-                  Depois de anos juntos, decidimos começar uma nova fase em nossas vidas. Estamos muito felizes em
+                  Depois de 3 anos e 4 meses juntos, decidimos começar uma nova fase em nossas vidas. Estamos muito felizes em
                   finalmente ter nosso próprio cantinho e queremos compartilhar essa alegria com as pessoas que amamos.
                   Cada presente e cada contribuição nos ajudará a transformar nossa casa em um verdadeiro lar.
                 </p>
@@ -67,7 +67,7 @@ export function AboutSection() {
                 <div>
                   <h3 className="font-serif font-semibold mb-1 text-foreground">Nossa Casa</h3>
                   <p className="text-sm text-muted-foreground text-pretty leading-relaxed">
-                    Um apartamento aconchegante onde planejamos construir nossos sonhos e criar memórias inesquecíveis
+                    Uma casa aconchegante onde planejamos construir nossos sonhos e criar memórias inesquecíveis
                     juntos.
                   </p>
                 </div>

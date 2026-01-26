@@ -369,6 +369,8 @@ export function GiftList({ onNavigateToMessages }: GiftListProps = {}) {
               <Input
                 id="amount"
                 type="number"
+                inputMode="decimal"
+                pattern="[0-9]*"
                 placeholder="0,00"
                 value={customAmount}
                 onChange={(e) => setCustomAmount(e.target.value)}

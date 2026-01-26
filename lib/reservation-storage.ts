@@ -10,6 +10,32 @@ export async function saveReservation(
   giftPrice?: number
 ): Promise<{ success: boolean; error?: string }> {
   try {
+    // Check if gift is open value by querying gifts table
+    const { data: gift, error: giftError } = await supabase
+      .from("gifts")
+      .select("is_open_value")
+      .eq("id", giftId)
+      .single() as { data: { is_open_value: boolean } | null; error: any }
+
+    if (giftError) {
+      console.error("Error fetching gift:", giftError)
+      return { success: false, error: "Erro ao verificar presente." }
+    }
+
+    // For non-open-value gifts, check for existing reservation
+    if (gift && !gift.is_open_value) {
+      const { data: existingReservation } = await supabase
+        .from("reservations")
+        .select("id")
+        .eq("gift_id", giftId)
+        .maybeSingle()
+
+      if (existingReservation) {
+        return { success: false, error: "Este presente já foi reservado por outra pessoa." }
+      }
+    }
+
+    // Proceed with reservation
     const { data, error } = await supabase
       .from("reservations")
       .insert({
@@ -19,15 +45,11 @@ export async function saveReservation(
         has_companion: hasCompanion,
         contribution_type: contributionType,
         gift_price: giftPrice || null,
-      })
+      } as any)
       .select()
       .single()
 
     if (error) {
-      // Check if it's a unique constraint violation (gift already reserved)
-      if (error.code === "23505") {
-        return { success: false, error: "Este presente já foi reservado por outra pessoa." }
-      }
       throw error
     }
 

@@ -53,7 +53,17 @@ export function GiftList({ onNavigateToMessages }: GiftListProps = {}) {
 
   const loadReservations = async () => {
     const reservations = await getReservations()
-    const reservedIds = new Set(reservations.map(r => r.giftId))
+    
+    // Only mark non-open-value gifts as reserved
+    const reservedIds = new Set(
+      reservations
+        .filter(r => {
+          const gift = gifts.find(g => g.id === r.giftId)
+          return gift && !gift.isOpenValue
+        })
+        .map(r => r.giftId)
+    )
+    
     const reservationsById = new Map(reservations.map(r => [r.giftId, r]))
     setReservedGifts(reservedIds)
     setReservationsMap(reservationsById)

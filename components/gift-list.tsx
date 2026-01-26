@@ -199,7 +199,7 @@ export function GiftList({ onNavigateToMessages }: GiftListProps = {}) {
   }
 
   const handleCopyPix = () => {
-    navigator.clipboard.writeText("seuemail@exemplo.com")
+    navigator.clipboard.writeText("mirian_sdf@hotmail.com")
     setCopied(true)
     setTimeout(() => setCopied(false), 2000)
   }
@@ -211,7 +211,7 @@ export function GiftList({ onNavigateToMessages }: GiftListProps = {}) {
       return
     }
 
-    const pixCode = generatePixPayload("seuemail@exemplo.com", amount, "Casa Nova", "Sao Paulo")
+    const pixCode = generatePixPayload("mirian_sdf@hotmail.com", amount, "Casa Nova", "Sao Paulo")
 
     navigator.clipboard.writeText(pixCode)
     setCopiedPixCode(true)
@@ -355,7 +355,7 @@ export function GiftList({ onNavigateToMessages }: GiftListProps = {}) {
             </DialogTitle>
             <DialogDescription>
               {selectedGift?.isOpenValue 
-                ? "Defina o valor que deseja contribuir e envie via PIX"
+                ? "Qualquer valor é bem-vindo! Sugerimos contribuições a partir de R$ 50,00 ❤️"
                 : `Valor estimado: R$ ${selectedGift?.price?.toFixed(2) || '0,00'}`
               }
             </DialogDescription>
@@ -379,12 +379,17 @@ export function GiftList({ onNavigateToMessages }: GiftListProps = {}) {
                   Valor sugerido: R$ {selectedGift.price.toFixed(2)} (você pode ajustar se preferir)
                 </p>
               )}
+              {selectedGift?.isOpenValue && (
+                <p className="text-xs text-muted-foreground">
+                  💝 Sugerimos contribuições a partir de R$ 50,00, mas qualquer valor será muito apreciado!
+                </p>
+              )}
             </div>
 
             <div className="space-y-2">
               <Label>Chave PIX</Label>
               <div className="flex items-center gap-2">
-                <Input readOnly value="seuemail@exemplo.com" className="font-mono text-sm bg-background/50" />
+                <Input readOnly value="mirian_sdf@hotmail.com" className="font-mono text-sm bg-background/50" />
                 <Button size="icon" variant="outline" onClick={handleCopyPix} className="shrink-0 bg-transparent">
                   {copied ? <Check className="h-4 w-4" /> : <Copy className="h-4 w-4" />}
                 </Button>

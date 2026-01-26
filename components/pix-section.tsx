@@ -6,19 +6,35 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Copy, Check, Heart, Smartphone, ExternalLink } from "lucide-react"
+import { generatePixPayload } from "@/lib/pix-generator"
 
 export function PixSection() {
   const [copied, setCopied] = useState(false)
+  const [copiedPixCode, setCopiedPixCode] = useState(false)
+  const [customAmount, setCustomAmount] = useState("")
   
-  const nubankLink = "https://nubank.com.br/cobrar/jx1qs/696d4df7-dc44-4d31-92e3-07d4b56fa81f"
-  const pixKey = "41504964802"
-  const recipientName = "Antonio Pires Felipe"
+  const pixKey = "mirian_sdf@hotmail.com"
+  const recipientName = "Mirian"
   const recipientCity = "São Paulo"
 
   const handleCopyKey = () => {
     navigator.clipboard.writeText(pixKey)
     setCopied(true)
     setTimeout(() => setCopied(false), 2000)
+  }
+
+  const handleCopyPixCode = () => {
+    const amount = Number.parseFloat(customAmount) || 0
+    if (amount <= 0) {
+      alert("Por favor, insira um valor válido")
+      return
+    }
+
+    const pixCode = generatePixPayload(pixKey, amount, recipientName, recipientCity)
+
+    navigator.clipboard.writeText(pixCode)
+    setCopiedPixCode(true)
+    setTimeout(() => setCopiedPixCode(false), 2000)
   }
 
   return (
@@ -31,56 +47,37 @@ export function PixSection() {
       </div>
 
       <div className="space-y-4">
-        {/* Nubank Link Card - Primary Option */}
-        <Card className="border-border/60 bg-gradient-to-br from-purple-50 to-purple-100 dark:from-purple-950/20 dark:to-purple-900/20">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2 font-serif">
-              <div className="flex h-9 w-9 items-center justify-center rounded-full bg-purple-500/20 border border-purple-500/30">
-                <Heart className="h-4 w-4 text-purple-600 dark:text-purple-400" />
-              </div>
-              Opção Recomendada - Nubank
-            </CardTitle>
-            <CardDescription>Clique no botão para abrir a cobrança e inserir o valor desejado</CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="grid grid-cols-2 gap-4 p-4 bg-white/50 dark:bg-black/20 rounded-lg">
-              <div>
-                <p className="text-xs text-muted-foreground">Beneficiário</p>
-                <p className="text-sm font-medium">{recipientName}</p>
-              </div>
-              <div>
-                <p className="text-xs text-muted-foreground">Cidade</p>
-                <p className="text-sm font-medium">{recipientCity}</p>
-              </div>
-            </div>
-
-            <a href={nubankLink} target="_blank" rel="noopener noreferrer" className="block">
-              <Button className="w-full gap-2 bg-purple-600 hover:bg-purple-700" size="lg">
-                <ExternalLink className="h-4 w-4" />
-                Abrir Cobrança Nubank
-              </Button>
-            </a>
-
-            <p className="text-xs text-center text-muted-foreground">
-              Você será redirecionado para o Nubank onde poderá inserir qualquer valor
-            </p>
-          </CardContent>
-        </Card>
-
-        {/* Alternative PIX Key Card */}
+        {/* PIX Key Card */}
         <Card className="border-border/60 bg-card/80">
           <CardHeader>
             <CardTitle className="flex items-center gap-2 font-serif text-lg">
               <div className="flex h-8 w-8 items-center justify-center rounded-full bg-accent/20 border border-accent/30">
                 <Smartphone className="h-4 w-4 text-accent" />
               </div>
-              Opção Alternativa - Chave PIX
+              Chave PIX
             </CardTitle>
-            <CardDescription>Use esta opção se preferir fazer PIX diretamente pelo seu banco</CardDescription>
+            <CardDescription>Use a chave abaixo para fazer PIX diretamente pelo seu banco</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="space-y-2">
-              <Label>Chave PIX (CPF)</Label>
+              <Label htmlFor="pix-amount">Valor da Contribuição (R$)</Label>
+              <Input
+                id="pix-amount"
+                type="number"
+                inputMode="decimal"
+                pattern="[0-9]*"
+                placeholder="0,00"
+                value={customAmount}
+                onChange={(e) => setCustomAmount(e.target.value)}
+                className="bg-background/50"
+              />
+              <p className="text-xs text-muted-foreground">
+                💝 Sugerimos contribuições a partir de R$ 50,00, mas qualquer valor será muito apreciado!
+              </p>
+            </div>
+
+            <div className="space-y-2">
+              <Label>Chave PIX (E-mail)</Label>
               <div className="flex gap-2">
                 <Input value={pixKey} readOnly className="font-mono text-sm bg-background/50" />
                 <Button variant="outline" size="icon" onClick={handleCopyKey} className="shrink-0">
@@ -92,37 +89,42 @@ export function PixSection() {
               </p>
             </div>
 
-            {/* Instructions */}
-            <div className="space-y-3 p-4 bg-blue-50 dark:bg-blue-950/20 rounded-lg border border-blue-200 dark:border-blue-900">
-              <div className="flex items-start gap-2">
-                <div className="flex h-6 w-6 items-center justify-center rounded-full bg-blue-100 dark:bg-blue-900 text-blue-600 dark:text-blue-400 text-xs font-bold shrink-0">
-                  1
-                </div>
-                <p className="text-sm">Abra o app do seu banco e acesse a área PIX</p>
-              </div>
-              <div className="flex items-start gap-2">
-                <div className="flex h-6 w-6 items-center justify-center rounded-full bg-blue-100 dark:bg-blue-900 text-blue-600 dark:text-blue-400 text-xs font-bold shrink-0">
-                  2
-                </div>
-                <p className="text-sm">Cole a chave PIX (CPF) copiada acima</p>
-              </div>
-              <div className="flex items-start gap-2">
-                <div className="flex h-6 w-6 items-center justify-center rounded-full bg-blue-100 dark:bg-blue-900 text-blue-600 dark:text-blue-400 text-xs font-bold shrink-0">
-                  3
-                </div>
-                <p className="text-sm">Insira o valor desejado e confirme o pagamento</p>
-              </div>
+            <div className="space-y-2">
+              <Label>PIX Copia e Cola</Label>
+              <Button
+                variant="outline"
+                className="w-full bg-transparent"
+                onClick={handleCopyPixCode}
+                disabled={!customAmount || Number.parseFloat(customAmount) <= 0}
+              >
+                {copiedPixCode ? (
+                  <>
+                    <Check className="h-4 w-4 mr-2" />
+                    Código Copiado!
+                  </>
+                ) : (
+                  <>
+                    <Copy className="h-4 w-4 mr-2" />
+                    Gerar e Copiar Código PIX
+                  </>
+                )}
+              </Button>
+              <p className="text-xs text-muted-foreground">
+                Cole o código no seu app bancário para pagar com um clique
+              </p>
             </div>
 
-            <Button
-              className="w-full gap-2"
-              size="lg"
-              variant="outline"
-              onClick={handleCopyKey}
-            >
-              <Copy className="h-4 w-4" />
-              {copied ? "Chave Copiada!" : "Copiar Chave PIX"}
-            </Button>
+            {/* Instructions */}
+            <div className="space-y-3 p-4 bg-blue-50 dark:bg-blue-950/20 rounded-lg border border-blue-200 dark:border-blue-900">
+              <h4 className="font-medium text-sm text-foreground">Como funciona?</h4>
+              <ol className="text-sm text-muted-foreground space-y-1 list-decimal list-inside">
+                <li>Defina o valor da contribuição</li>
+                <li>Clique em "Gerar e Copiar Código PIX"</li>
+                <li>Abra seu aplicativo bancário</li>
+                <li>Cole o código PIX ou use a chave manualmente</li>
+                <li>Confirme a transferência</li>
+              </ol>
+            </div>
           </CardContent>
         </Card>
       </div>

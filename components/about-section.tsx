@@ -86,7 +86,7 @@ export function AboutSection() {
                 <div>
                   <h3 className="font-serif font-semibold mb-1 text-foreground">O Chá de Casa Nova</h3>
                   <p className="text-sm text-muted-foreground text-pretty leading-relaxed">
-                    <strong>28 de fevereiro</strong> a partir das <strong>16h30</strong>
+                    <strong>28 de fevereiro</strong> a partir das <strong>12h00</strong>
                     <br />
                     Será uma tarde leve, com boas conversas, café, carinho e aquele clima gostoso de casa cheia.
                   </p>

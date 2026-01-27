@@ -359,7 +359,7 @@ export function AttendanceSection({ onRequestLogin, onNavigateToSection }: Atten
                   <h3 className="font-serif font-semibold mb-2 text-foreground">Detalhes do Evento</h3>
                   <div className="text-sm text-muted-foreground space-y-1">
                     <p><strong>Data:</strong> 28 de fevereiro de 2026</p>
-                    <p><strong>Horário:</strong> A partir das 16h30</p>
+                    <p><strong>Horário:</strong> A partir das 12:00</p>
                     <p><strong>Local:</strong> Clube Ipanema</p>
                   </div>
                 </div>

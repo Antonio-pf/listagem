@@ -35,13 +35,14 @@ export function AttendanceSection({ onRequestLogin, onNavigateToSection }: Atten
   const [isLoadingConfirmation, setIsLoadingConfirmation] = useState(true)
 
   useEffect(() => {
-    // Reset state when user changes
+    // Reset all form state when user changes
     setExistingConfirmation(null)
     setIsEditing(false)
     setWillAttend("yes")
     setAdditionalNotes("")
+    setIsLoadingConfirmation(true)
     
-    // Always call loadExistingConfirmation, it handles the no-user case
+    // Load existing confirmation for the new user (if any)
     loadExistingConfirmation()
   }, [user?.id])
 

@@ -304,7 +304,7 @@ export function AttendanceSection({ onRequestLogin, onNavigateToSection }: Atten
                     </div>
                     <Textarea
                       id="notes"
-                      placeholder="Deixe suas felicitações e votos para o casal! Sua mensagem aparecerá no mural de mensagens para todos verem 💝"
+                      placeholder="Deixe suas felicitações para o casal 💝"
                       value={additionalNotes}
                       onChange={(e) => setAdditionalNotes(e.target.value)}
                       className="bg-background/50 border-border/80 min-h-[100px]"

@@ -360,7 +360,17 @@ export function AttendanceSection({ onRequestLogin, onNavigateToSection }: Atten
                   <div className="text-sm text-muted-foreground space-y-1">
                     <p><strong>Data:</strong> 28 de fevereiro de 2026</p>
                     <p><strong>Horário:</strong> A partir das 12:00</p>
-                    <p><strong>Local:</strong> Clube Ipanema</p>
+                    <p>
+                      <strong>Local:</strong>{" "}
+                      <a 
+                        href="https://share.google/G9hdefnhSgh51GWtn" 
+                        target="_blank" 
+                        rel="noopener noreferrer"
+                        className="text-primary hover:text-primary/80 underline underline-offset-2 transition-colors"
+                      >
+                        Clube Ipanema
+                      </a>
+                    </p>
                   </div>
                 </div>
               </div>

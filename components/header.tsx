@@ -18,13 +18,28 @@ export function Header({ activeSection, onSectionChange }: HeaderProps) {
   const [open, setOpen] = useState(false)
   const { user, isAuthenticated, logout } = useAuth()
 
-  const menuItems = [
-    { id: "presentes", label: "Presentes" },
-    { id: "pix", label: "PIX" },
-    { id: "confirmacao", label: "Confirmar Presença" },
-    { id: "mensagens", label: "Mensagens" },
-    { id: "sobre", label: "Sobre o casal" },
-  ]
+  const getMenuItems = () => {
+    // Base items always accessible
+    const baseItems = [
+      { id: "confirmacao", label: "Confirmar Presença" },
+      { id: "sobre", label: "Sobre o casal" },
+    ]
+    
+    // If user confirmed attendance with "yes", show all tabs
+    if (user?.hasConfirmedAttendance && user?.willAttend) {
+      return [
+        { id: "presentes", label: "Presentes" },
+        { id: "pix", label: "PIX" },
+        { id: "mensagens", label: "Mensagens" },
+        ...baseItems,
+      ]
+    }
+    
+    // If not authenticated or not confirmed or confirmed "no"
+    return baseItems
+  }
+
+  const menuItems = getMenuItems()
 
   const handleNavClick = (id: string) => {
     onSectionChange(id)

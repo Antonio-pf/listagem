@@ -13,15 +13,27 @@ import { useAuth } from "@/lib/auth-context"
 import { PageTransition } from "@/components/transitions/page-transition"
 
 export default function Home() {
-  const [activeSection, setActiveSection] = useState("presentes")
+  const [activeSection, setActiveSection] = useState("confirmacao")
   const [showLoginModal, setShowLoginModal] = useState(false)
-  const { isAuthenticated } = useAuth()
+  const { isAuthenticated, user } = useAuth()
 
   useEffect(() => {
     if (!isAuthenticated) {
       setShowLoginModal(true)
     }
   }, [isAuthenticated])
+
+  // Navigation guard: redirect to confirmacao if accessing protected sections without proper attendance
+  useEffect(() => {
+    const protectedSections = ['presentes', 'pix', 'mensagens']
+    
+    if (protectedSections.includes(activeSection)) {
+      // Redirect if not authenticated, not confirmed, or confirmed "no"
+      if (!user?.hasConfirmedAttendance || !user?.willAttend) {
+        setActiveSection("confirmacao")
+      }
+    }
+  }, [activeSection, user])
 
   return (
     <div className="min-h-screen bg-background">

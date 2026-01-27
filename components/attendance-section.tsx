@@ -25,7 +25,7 @@ interface AttendanceSectionProps {
 export function AttendanceSection({ onRequestLogin, onNavigateToSection }: AttendanceSectionProps) {
   const { ref: headerRef, isInView: headerInView } = useScrollAnimation()
   const { ref: formRef, isInView: formInView } = useScrollAnimation()
-  const { user } = useAuth()
+  const { user, refreshAttendanceStatus } = useAuth()
   
   const [willAttend, setWillAttend] = useState<string>("yes")
   const [additionalNotes, setAdditionalNotes] = useState<string>("")
@@ -129,6 +129,7 @@ export function AttendanceSection({ onRequestLogin, onNavigateToSection }: Atten
             ? "Sua confirmação foi atualizada com sucesso." 
             : "Obrigado por confirmar sua presença!",
         })
+        await refreshAttendanceStatus()
         await loadExistingConfirmation()
         setIsEditing(false)
       } else {

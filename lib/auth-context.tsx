@@ -7,12 +7,15 @@ export interface User {
   id: string
   name: string
   hasCompanion: boolean
+  hasConfirmedAttendance: boolean
+  willAttend: boolean | null
 }
 
 export interface AuthContextType {
   user: User | null
   login: (name: string, hasCompanion: boolean) => Promise<void>
   logout: () => void
+  refreshAttendanceStatus: () => Promise<void>
   isAuthenticated: boolean
   isLoading: boolean
 }
@@ -35,13 +38,22 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             .from("guests")
             .select("*")
             .eq("id", guestId)
-            .single()
+            .single() as { data: any; error: any }
 
           if (data && !error) {
+            // Check attendance status
+            const { data: attendanceData } = await supabase
+              .from("event_attendance")
+              .select("will_attend")
+              .eq("guest_id", guestId)
+              .maybeSingle() as { data: any }
+
             setUser({
               id: data.id,
               name: data.name,
               hasCompanion: data.has_companion,
+              hasConfirmedAttendance: !!attendanceData,
+              willAttend: attendanceData?.will_attend ?? null,
             })
           } else {
             // Guest not found, clear localStorage
@@ -66,7 +78,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         .select("*")
         .eq("name", name)
         .eq("has_companion", hasCompanion)
-        .maybeSingle()
+        .maybeSingle() as { data: any }
 
       let guestData
 
@@ -80,18 +92,27 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           .insert({
             name,
             has_companion: hasCompanion,
-          })
+          } as any)
           .select()
-          .single()
+          .single() as { data: any; error: any }
 
         if (error) throw error
         guestData = data
       }
 
+      // Check attendance status
+      const { data: attendanceData } = await supabase
+        .from("event_attendance")
+        .select("will_attend")
+        .eq("guest_id", guestData.id)
+        .maybeSingle() as { data: any }
+
       const userData: User = {
         id: guestData.id,
         name: guestData.name,
         hasCompanion: guestData.has_companion,
+        hasConfirmedAttendance: !!attendanceData,
+        willAttend: attendanceData?.will_attend ?? null,
       }
 
       setUser(userData)
@@ -99,6 +120,26 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     } catch (error) {
       console.error("Error logging in:", error)
       throw error
+    }
+  }
+
+  const refreshAttendanceStatus = async () => {
+    if (!user) return
+
+    try {
+      const { data: attendanceData } = await supabase
+        .from("event_attendance")
+        .select("will_attend")
+        .eq("guest_id", user.id)
+        .maybeSingle() as { data: any }
+
+      setUser({
+        ...user,
+        hasConfirmedAttendance: !!attendanceData,
+        willAttend: attendanceData?.will_attend ?? null,
+      })
+    } catch (error) {
+      console.error("Error refreshing attendance status:", error)
     }
   }
 
@@ -111,6 +152,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     user,
     login,
     logout,
+    refreshAttendanceStatus,
     isAuthenticated: !!user,
     isLoading,
   }

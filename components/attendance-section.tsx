@@ -32,6 +32,7 @@ export function AttendanceSection({ onRequestLogin, onNavigateToSection }: Atten
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [existingConfirmation, setExistingConfirmation] = useState<AttendanceConfirmation | null>(null)
   const [isEditing, setIsEditing] = useState(false)
+  const [isLoadingConfirmation, setIsLoadingConfirmation] = useState(true)
 
   useEffect(() => {
     if (user?.id) {
@@ -40,14 +41,19 @@ export function AttendanceSection({ onRequestLogin, onNavigateToSection }: Atten
   }, [user?.id])
 
   const loadExistingConfirmation = async () => {
-    if (!user?.id) return
+    if (!user?.id) {
+      setIsLoadingConfirmation(false)
+      return
+    }
 
+    setIsLoadingConfirmation(true)
     const confirmation = await getGuestAttendance(user.id)
     if (confirmation) {
       setExistingConfirmation(confirmation)
       setWillAttend(confirmation.willAttend ? "yes" : "no")
       setAdditionalNotes(confirmation.additionalNotes || "")
     }
+    setIsLoadingConfirmation(false)
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -142,7 +148,7 @@ export function AttendanceSection({ onRequestLogin, onNavigateToSection }: Atten
     setIsEditing(true)
   }
 
-  const showForm = !existingConfirmation || isEditing
+  const showForm = !isLoadingConfirmation && (!existingConfirmation || isEditing)
 
   return (
     <div className="max-w-4xl mx-auto">
@@ -166,7 +172,20 @@ export function AttendanceSection({ onRequestLogin, onNavigateToSection }: Atten
         animate={formInView ? "visible" : "hidden"}
         className="space-y-6"
       >
-        {existingConfirmation && !isEditing && (
+        {isLoadingConfirmation && (
+          <motion.div variants={staggerItemVariants}>
+            <Card className="border-border/60 bg-card/80">
+              <CardContent className="pt-6 flex items-center justify-center py-12">
+                <div className="flex flex-col items-center gap-3">
+                  <div className="h-8 w-8 animate-spin rounded-full border-2 border-primary border-t-transparent" />
+                  <p className="text-sm text-muted-foreground">Verificando confirmação...</p>
+                </div>
+              </CardContent>
+            </Card>
+          </motion.div>
+        )}
+
+        {!isLoadingConfirmation && existingConfirmation && !isEditing && (
           <motion.div variants={staggerItemVariants}>
             <Card className="bg-gradient-to-br from-accent/10 via-primary/5 to-secondary/10 border-accent/20">
               <CardContent className="pt-6 space-y-4">

@@ -21,6 +21,7 @@ export function Header({ activeSection, onSectionChange }: HeaderProps) {
   const menuItems = [
     { id: "presentes", label: "Presentes" },
     { id: "pix", label: "PIX" },
+    { id: "confirmacao", label: "Confirmar Presença" },
     { id: "mensagens", label: "Mensagens" },
     { id: "sobre", label: "Sobre o casal" },
   ]

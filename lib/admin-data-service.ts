@@ -1,4 +1,5 @@
 import { supabase } from './supabase'
+import type { AttendanceConfirmation } from './attendance-storage'
 
 export interface AdminStats {
   totalGuests: number
@@ -6,6 +7,10 @@ export interface AdminStats {
   totalMessages: number
   guestsWithCompanions: number
   reservedGiftsPercentage: number
+  totalAttendanceConfirmed: number
+  totalAttending: number
+  totalNotAttending: number
+  totalPendingConfirmation: number
 }
 
 export interface ReservationDetail {
@@ -34,19 +39,39 @@ export interface MessageDetail {
   created_at: string
 }
 
+export interface AttendanceDetail {
+  id: string
+  guest_id: string
+  guest_name: string
+  will_attend: boolean
+  companion_count: number
+  dietary_restrictions: string | null
+  additional_notes: string | null
+  confirmed_at: string
+  updated_at: string
+}
+
 export async function getAdminStats(): Promise<AdminStats> {
   try {
     const [
       { count: totalGuests },
       { count: totalReservations },
       { count: totalMessages },
-      { count: guestsWithCompanions }
+      { count: guestsWithCompanions },
+      { count: totalAttendanceConfirmed },
+      { count: totalAttending },
+      { count: totalNotAttending }
     ] = await Promise.all([
       supabase.from('guests').select('*', { count: 'exact', head: true }),
       supabase.from('reservations').select('*', { count: 'exact', head: true }),
       supabase.from('messages').select('*', { count: 'exact', head: true }),
-      supabase.from('guests').select('*', { count: 'exact', head: true }).eq('has_companion', true)
+      supabase.from('guests').select('*', { count: 'exact', head: true }).eq('has_companion', true),
+      supabase.from('event_attendance').select('*', { count: 'exact', head: true }),
+      supabase.from('event_attendance').select('*', { count: 'exact', head: true }).eq('will_attend', true),
+      supabase.from('event_attendance').select('*', { count: 'exact', head: true }).eq('will_attend', false)
     ])
+
+    const totalPendingConfirmation = (totalGuests || 0) - (totalAttendanceConfirmed || 0)
 
     // Assuming there are 15 gifts total (based on the gift list)
     const TOTAL_GIFTS = 15
@@ -59,7 +84,11 @@ export async function getAdminStats(): Promise<AdminStats> {
       totalReservations: totalReservations || 0,
       totalMessages: totalMessages || 0,
       guestsWithCompanions: guestsWithCompanions || 0,
-      reservedGiftsPercentage
+      reservedGiftsPercentage,
+      totalAttendanceConfirmed: totalAttendanceConfirmed || 0,
+      totalAttending: totalAttending || 0,
+      totalNotAttending: totalNotAttending || 0,
+      totalPendingConfirmation
     }
   } catch (error) {
     console.error('Error fetching admin stats:', error)
@@ -165,6 +194,45 @@ export async function getAllMessages(): Promise<MessageDetail[]> {
     return data || []
   } catch (error) {
     console.error('Error fetching messages:', error)
+    throw error
+  }
+}
+
+export async function getAllAttendances(): Promise<AttendanceDetail[]> {
+  try {
+    const { data: attendances, error } = await supabase
+      .from('event_attendance')
+      .select('*')
+      .order('confirmed_at', { ascending: false }) as { data: any[] | null; error: any }
+
+    if (error) throw error
+
+    // Join with guests to get guest names
+    const attendancesWithNames = await Promise.all(
+      (attendances || []).map(async (attendance) => {
+        const { data: guest } = await supabase
+          .from('guests')
+          .select('name')
+          .eq('id', attendance.guest_id)
+          .single() as { data: any; error: any }
+
+        return {
+          id: attendance.id,
+          guest_id: attendance.guest_id,
+          guest_name: guest?.name || 'Unknown',
+          will_attend: attendance.will_attend,
+          companion_count: attendance.companion_count,
+          dietary_restrictions: attendance.dietary_restrictions,
+          additional_notes: attendance.additional_notes,
+          confirmed_at: attendance.confirmed_at,
+          updated_at: attendance.updated_at
+        }
+      })
+    )
+
+    return attendancesWithNames
+  } catch (error) {
+    console.error('Error fetching attendances:', error)
     throw error
   }
 }

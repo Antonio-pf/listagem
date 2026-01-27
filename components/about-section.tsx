@@ -104,8 +104,8 @@ export function AboutSection() {
                   <MapPin className="h-5 w-5 text-primary" />
                 </div>
                 <div>
-                  <h3 className="font-serif font-semibold mb-1 text-foreground">Nosso Novo Endereço</h3>
-                  <p className="text-sm text-muted-foreground">Rua Geraldo Marques, 211</p>
+                  <h3 className="font-serif font-semibold mb-1 text-foreground">Local do Evento</h3>
+                  <p className="text-sm text-muted-foreground">Clube Ipanema</p>
                 </div>
               </div>
             </CardContent>

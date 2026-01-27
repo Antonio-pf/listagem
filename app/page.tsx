@@ -7,6 +7,7 @@ import { Header } from "@/components/header"
 import { PixSection } from "@/components/pix-section"
 import { MessagesSection } from "@/components/messages-section"
 import { AboutSection } from "@/components/about-section"
+import { AttendanceSection } from "@/components/attendance-section"
 import { LoginModal } from "@/components/login-modal"
 import { useAuth } from "@/lib/auth-context"
 import { PageTransition } from "@/components/transitions/page-transition"
@@ -35,6 +36,11 @@ export default function Home() {
           {activeSection === "pix" && (
             <PageTransition key="pix">
               <PixSection />
+            </PageTransition>
+          )}
+          {activeSection === "confirmacao" && (
+            <PageTransition key="confirmacao">
+              <AttendanceSection onRequestLogin={() => setShowLoginModal(true)} />
             </PageTransition>
           )}
           {activeSection === "mensagens" && (

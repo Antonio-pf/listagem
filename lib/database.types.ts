@@ -116,6 +116,38 @@ export interface Database {
           updated_at?: string
         }
       }
+      event_attendance: {
+        Row: {
+          id: string
+          guest_id: string
+          will_attend: boolean
+          companion_count: number
+          dietary_restrictions: string | null
+          additional_notes: string | null
+          confirmed_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          guest_id: string
+          will_attend: boolean
+          companion_count?: number
+          dietary_restrictions?: string | null
+          additional_notes?: string | null
+          confirmed_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          guest_id?: string
+          will_attend?: boolean
+          companion_count?: number
+          dietary_restrictions?: string | null
+          additional_notes?: string | null
+          confirmed_at?: string
+          updated_at?: string
+        }
+      }
     }
     Views: {
       [_ in never]: never

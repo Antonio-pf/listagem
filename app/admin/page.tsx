@@ -1,4 +1,4 @@
-import { getAdminStats, getAllReservations, getAllGuests, getAllMessages, getEventResources } from '@/lib/admin-data-service'
+import { getAdminStats, getAllReservations, getAllGuests, getAllMessages, getEventResources, getAllAttendances } from '@/lib/admin-data-service'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Users, Gift, MessageCircle, UserCheck, Armchair, Table2 } from 'lucide-react'
 import { ExportButton } from '@/components/export-button'
@@ -8,12 +8,13 @@ export const dynamic = 'force-dynamic'
 export const revalidate = 0
 
 export default async function AdminDashboard() {
-  const [stats, reservations, guests, messages, eventResources] = await Promise.all([
+  const [stats, reservations, guests, messages, eventResources, attendances] = await Promise.all([
     getAdminStats(),
     getAllReservations(),
     getAllGuests(),
     getAllMessages(),
-    getEventResources()
+    getEventResources(),
+    getAllAttendances()
   ])
 
   return (
@@ -216,6 +217,57 @@ export default async function AdminDashboard() {
             {guests.length === 0 && (
               <p className="text-center text-muted-foreground py-8">
                 Nenhum convidado ainda
+              </p>
+            )}
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Attendance Confirmations Table */}
+      <Card>
+        <CardHeader className="flex flex-col sm:flex-row items-start sm:items-center justify-between space-y-2 sm:space-y-0 px-4 sm:px-6">
+          <CardTitle className="text-base sm:text-lg font-serif">Confirmações de Presença</CardTitle>
+          {attendances.length > 0 && (
+            <ExportButton type="attendances" className="w-full sm:w-auto" />
+          )}
+        </CardHeader>
+        <CardContent className="px-2 sm:px-6">
+          <div className="overflow-x-auto">
+            <table className="w-full min-w-[550px]">
+              <thead>
+                <tr className="border-b">
+                  <th className="text-left py-3 px-3 text-xs font-medium text-muted-foreground">Nome</th>
+                  <th className="text-left py-3 px-3 text-xs font-medium text-muted-foreground">Confirmou</th>
+                  <th className="text-left py-3 px-3 text-xs font-medium text-muted-foreground hidden md:table-cell">Mensagem</th>
+                  <th className="text-left py-3 px-3 text-xs font-medium text-muted-foreground hidden lg:table-cell">Data</th>
+                </tr>
+              </thead>
+              <tbody>
+                {attendances.map((attendance) => (
+                  <tr key={attendance.id} className="border-b hover:bg-muted/50">
+                    <td className="py-3 px-3 text-sm">{attendance.guest_name}</td>
+                    <td className="py-3 px-3">
+                      <span className={`text-xs px-2 py-1 rounded-full font-medium ${
+                        attendance.will_attend 
+                          ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400' 
+                          : 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400'
+                      }`}>
+                        {attendance.will_attend ? 'Sim' : 'Não'}
+                      </span>
+                    </td>
+                    <td className="py-3 px-3 text-sm max-w-[200px] sm:max-w-md truncate hidden md:table-cell">
+                      {attendance.additional_notes || '-'}
+                    </td>
+                    <td className="py-3 px-3 text-xs text-muted-foreground hidden lg:table-cell">
+                      {new Date(attendance.confirmed_at).toLocaleString('pt-BR', { dateStyle: 'short', timeStyle: 'short' })}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+            {attendances.length === 0 && (
+              <p className="text-center text-muted-foreground py-8">
+                Nenhuma confirmação ainda
               </p>
             )}
           </div>

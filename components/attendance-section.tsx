@@ -19,9 +19,10 @@ import confetti from "canvas-confetti"
 
 interface AttendanceSectionProps {
   onRequestLogin?: () => void
+  onNavigateToSection?: (section: string) => void
 }
 
-export function AttendanceSection({ onRequestLogin }: AttendanceSectionProps) {
+export function AttendanceSection({ onRequestLogin, onNavigateToSection }: AttendanceSectionProps) {
   const { ref: headerRef, isInView: headerInView } = useScrollAnimation()
   const { ref: formRef, isInView: formInView } = useScrollAnimation()
   const { user } = useAuth()
@@ -198,7 +199,11 @@ export function AttendanceSection({ onRequestLogin }: AttendanceSectionProps) {
                             <Button 
                               variant="outline" 
                               size="sm"
-                              onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+                              onClick={() => {
+                                if (onNavigateToSection) {
+                                  onNavigateToSection('presentes')
+                                }
+                              }}
                               className="justify-start"
                             >
                               🎁 Ver lista de presentes
@@ -207,8 +212,9 @@ export function AttendanceSection({ onRequestLogin }: AttendanceSectionProps) {
                               variant="outline" 
                               size="sm"
                               onClick={() => {
-                                const messagesSection = document.getElementById('messages-section')
-                                messagesSection?.scrollIntoView({ behavior: 'smooth' })
+                                if (onNavigateToSection) {
+                                  onNavigateToSection('mensagens')
+                                }
                               }}
                               className="justify-start"
                             >

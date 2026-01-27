@@ -40,7 +40,10 @@ export default function Home() {
           )}
           {activeSection === "confirmacao" && (
             <PageTransition key="confirmacao">
-              <AttendanceSection onRequestLogin={() => setShowLoginModal(true)} />
+              <AttendanceSection 
+                onRequestLogin={() => setShowLoginModal(true)} 
+                onNavigateToSection={setActiveSection}
+              />
             </PageTransition>
           )}
           {activeSection === "mensagens" && (

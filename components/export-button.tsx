@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button"
 import { Download } from "lucide-react"
 
 interface ExportButtonProps {
-  type: 'guests' | 'reservations' | 'messages'
+  type: 'guests' | 'reservations' | 'messages' | 'attendances'
   className?: string
 }
 

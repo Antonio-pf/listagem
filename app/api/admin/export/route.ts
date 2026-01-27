@@ -3,6 +3,7 @@ import {
   getAllReservations, 
   getAllGuests, 
   getAllMessages,
+  getAllAttendances,
   convertToCSV 
 } from '@/lib/admin-data-service'
 
@@ -16,7 +17,7 @@ export async function GET(request: NextRequest) {
     const type = searchParams.get('type') // 'guests', 'reservations', 'messages'
     const format = searchParams.get('format') || 'csv' // 'csv' or 'json'
 
-    if (!type || !['guests', 'reservations', 'messages'].includes(type)) {
+    if (!type || !['guests', 'reservations', 'messages', 'attendances'].includes(type)) {
       return NextResponse.json(
         { error: 'Invalid type parameter' },
         { status: 400 }
@@ -43,6 +44,11 @@ export async function GET(request: NextRequest) {
         data = await getAllMessages()
         headers = ['guest_name', 'message', 'created_at']
         filename = `mensagens-${Date.now()}`
+        break
+      case 'attendances':
+        data = await getAllAttendances()
+        headers = ['guest_name', 'will_attend', 'additional_notes', 'confirmed_at']
+        filename = `confirmacoes-${Date.now()}`
         break
     }
 

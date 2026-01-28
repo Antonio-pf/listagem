@@ -58,8 +58,6 @@ git push → GitHub Actions (CI) → Testes + Build → Vercel Deploy → Produ�
    - ✅ CI - Tests and Quality / build
 4. **Salve**
 
-**Resultado**: Agora você NÃO consegue fazer merge (nem push direto) se os testes falharem!
-
 ---
 
 ## 🔄 Fluxo de Trabalho Recomendado

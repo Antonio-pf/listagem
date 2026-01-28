@@ -63,9 +63,11 @@ jobs:
       - name: Build project
         run: npm run build
         env:
-          # Add any required environment variables for build
-          NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
-          NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
+          # Required environment variables for build
+          NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL || 'https://placeholder.supabase.co' }}
+          NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'placeholder-key' }}
+          ADMIN_PASSWORD: ${{ secrets.ADMIN_PASSWORD || 'placeholder-password' }}
+          ADMIN_SESSION_SECRET: ${{ secrets.ADMIN_SESSION_SECRET || 'placeholder-secret' }}
 
   deploy-check:
     name: Deployment Ready

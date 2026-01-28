@@ -16,6 +16,7 @@ import { useAuth } from "@/lib/auth-context"
 import type { Database } from "@/lib/database.types"
 import { useScrollAnimation } from "@/hooks/use-scroll-animation"
 import { scrollRevealVariants, staggerContainerVariants, staggerItemVariants } from "@/lib/animation-variants"
+import { MessageSkeleton } from "@/components/skeletons/message-skeleton"
 
 type DbMessage = Database["public"]["Tables"]["messages"]["Row"]
 
@@ -210,7 +211,24 @@ export function MessagesSection() {
         animate={messagesInView ? "visible" : "hidden"}
       >
         <h3 className="text-xl font-serif font-semibold text-foreground">Mensagens Recebidas</h3>
-        {messages.map((msg) => (
+        {isLoading ? (
+          <>
+            {Array.from({ length: 3 }).map((_, i) => (
+              <motion.div key={`skeleton-${i}`} variants={staggerItemVariants}>
+                <MessageSkeleton />
+              </motion.div>
+            ))}
+          </>
+        ) : messages.length === 0 ? (
+          <Card className="border-border/60 bg-card/80">
+            <CardContent className="pt-6">
+              <p className="text-center text-muted-foreground">
+                Seja o primeiro a deixar uma mensagem de carinho!
+              </p>
+            </CardContent>
+          </Card>
+        ) : (
+          messages.map((msg) => (
           <motion.div key={msg.id} variants={staggerItemVariants}>
             <Card className="border-border/60 bg-card/80">
             <CardContent className="pt-6">
@@ -229,7 +247,7 @@ export function MessagesSection() {
             </CardContent>
           </Card>
           </motion.div>
-        ))}
+        )))}
       </motion.div>
     </div>
   )

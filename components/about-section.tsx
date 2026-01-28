@@ -105,7 +105,16 @@ export function AboutSection() {
                 </div>
                 <div>
                   <h3 className="font-serif font-semibold mb-1 text-foreground">Local do Evento</h3>
-                  <p className="text-sm text-muted-foreground">Clube Ipanema</p>
+                  <p className="text-sm text-muted-foreground">
+                    <a 
+                      href="https://share.google/G9hdefnhSgh51GWtn" 
+                      target="_blank" 
+                      rel="noopener noreferrer"
+                      className="text-primary hover:text-primary/80 underline underline-offset-2 transition-colors"
+                    >
+                      Clube Ipanema
+                    </a>
+                  </p>
                 </div>
               </div>
             </CardContent>
@@ -126,10 +135,7 @@ export function AboutSection() {
               <Heart className="h-7 w-7 text-accent" fill="currentColor" />
             </div>
             <h3 className="text-xl font-serif font-semibold mb-2 text-foreground">Esperamos você!</h3>
-            <p className="text-muted-foreground text-pretty leading-relaxed max-w-2xl mx-auto">
-              Com muita alegria, queremos convidar você para um chá de casa nova, para celebrar esse novo começo ao
-              nosso lado. Agradecemos de coração por cada gesto de carinho e generosidade.
-            </p>
+           
           </CardContent>
         </Card>
         </motion.div>

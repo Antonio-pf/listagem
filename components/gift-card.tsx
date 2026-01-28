@@ -1,5 +1,6 @@
 "use client"
 
+import { memo } from "react"
 import type { Gift } from "@/lib/types"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
@@ -27,7 +28,7 @@ interface GiftCardProps {
   onCancelReservation: (id: string) => void
 }
 
-export function GiftCard({ gift, isReserved, currentUser, isReserving, onReserve, onCancelReservation }: GiftCardProps) {
+export const GiftCard = memo(function GiftCard({ gift, isReserved, currentUser, isReserving, onReserve, onCancelReservation }: GiftCardProps) {
   const handleReserveGift = () => {
     if (!isReserved && !isReserving) {
       onReserve(gift.id, "gift")
@@ -172,4 +173,4 @@ export function GiftCard({ gift, isReserved, currentUser, isReserving, onReserve
     </Card>
     </motion.div>
   )
-}
+})

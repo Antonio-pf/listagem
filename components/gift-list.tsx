@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react"
 import { motion, AnimatePresence } from "framer-motion"
 import { GiftCard } from "@/components/gift-card"
+import { GiftCardSkeleton } from "@/components/skeletons/gift-card-skeleton"
 import { Badge } from "@/components/ui/badge"
 import type { Gift } from "@/lib/types"
 import { staggerContainerVariants, staggerItemVariants, badgeVariants } from "@/lib/animation-variants"
@@ -292,9 +293,18 @@ export function GiftList({ onNavigateToMessages }: GiftListProps = {}) {
       </motion.div>
 
       {loading ? (
-        <div className="text-center py-12">
-          <p className="text-muted-foreground text-lg">Carregando presentes...</p>
-        </div>
+        <motion.div 
+          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
+          initial="hidden"
+          animate="visible"
+          variants={staggerContainerVariants}
+        >
+          {Array.from({ length: 6 }).map((_, i) => (
+            <motion.div key={`skeleton-${i}`} variants={staggerItemVariants}>
+              <GiftCardSkeleton />
+            </motion.div>
+          ))}
+        </motion.div>
       ) : (
         <motion.div 
           className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"

@@ -179,6 +179,36 @@ export function AttendanceSection({ onRequestLogin, onNavigateToSection }: Atten
         animate={formInView ? "visible" : "hidden"}
         className="space-y-6"
       >
+        <motion.div variants={staggerItemVariants}>
+          <Card className="border-border/60 bg-card/80">
+            <CardContent className="pt-6">
+              <div className="flex items-start gap-3">
+                <div className="flex h-10 w-10 items-center justify-center rounded-full bg-accent/20 border border-accent/30 shrink-0">
+                  <Calendar className="h-5 w-5 text-accent" />
+                </div>
+                <div>
+                  <h3 className="font-serif font-semibold mb-2 text-foreground">Detalhes do Evento</h3>
+                  <div className="text-sm text-muted-foreground space-y-1">
+                    <p><strong>Data:</strong> 28 de fevereiro de 2026</p>
+                    <p><strong>Horário:</strong> A partir das 12:00</p>
+                    <p>
+                      <strong>Local:</strong>{" "}
+                      <a 
+                        href="https://share.google/G9hdefnhSgh51GWtn" 
+                        target="_blank" 
+                        rel="noopener noreferrer"
+                        className="text-primary hover:text-primary/80 underline underline-offset-2 transition-colors"
+                      >
+                        Clube Ipanema
+                      </a>
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </motion.div>
+
         {isLoadingConfirmation && (
           <motion.div variants={staggerItemVariants}>
             <Card className="border-border/60 bg-card/80">
@@ -348,35 +378,6 @@ export function AttendanceSection({ onRequestLogin, onNavigateToSection }: Atten
           </motion.div>
         )}
 
-        <motion.div variants={staggerItemVariants}>
-          <Card className="border-border/60 bg-card/80">
-            <CardContent className="pt-6">
-              <div className="flex items-start gap-3">
-                <div className="flex h-10 w-10 items-center justify-center rounded-full bg-accent/20 border border-accent/30 shrink-0">
-                  <Calendar className="h-5 w-5 text-accent" />
-                </div>
-                <div>
-                  <h3 className="font-serif font-semibold mb-2 text-foreground">Detalhes do Evento</h3>
-                  <div className="text-sm text-muted-foreground space-y-1">
-                    <p><strong>Data:</strong> 28 de fevereiro de 2026</p>
-                    <p><strong>Horário:</strong> A partir das 12:00</p>
-                    <p>
-                      <strong>Local:</strong>{" "}
-                      <a 
-                        href="https://share.google/G9hdefnhSgh51GWtn" 
-                        target="_blank" 
-                        rel="noopener noreferrer"
-                        className="text-primary hover:text-primary/80 underline underline-offset-2 transition-colors"
-                      >
-                        Clube Ipanema
-                      </a>
-                    </p>
-                  </div>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        </motion.div>
       </motion.div>
     </div>
   )

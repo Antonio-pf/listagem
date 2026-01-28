@@ -65,8 +65,11 @@ export function Header({ activeSection, onSectionChange }: HeaderProps) {
               <Home className="h-5 w-5 text-accent" />
             </div>
             <div>
-              <h1 className="text-xl md:text-2xl font-serif font-semibold text-foreground">Chá de Casa Nova</h1>
-              <p className="text-xs md:text-sm text-muted-foreground">Com carinho, para o nosso novo lar</p>
+              <h1 className="text-sm sm:text-lg md:text-xl lg:text-2xl font-serif font-semibold text-foreground leading-tight">
+                <span className="block sm:inline">Chá Casa Nova</span>{" "}
+                <span className="text-accent">Antônio & Mirian</span>
+              </h1>
+              <p className="text-xs sm:text-xs md:text-sm text-muted-foreground">Com carinho, para o nosso novo lar</p>
             </div>
           </div>
 

@@ -1,8 +1,8 @@
 "use client"
 
-import { Home, Heart, Menu, LogOut, User } from "lucide-react"
+import { Home, Heart, Menu, LogOut, User, Gift, Wallet, MessageCircle, Calendar } from "lucide-react"
 import { Button } from "@/components/ui/button"
-import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
+import { Sheet, SheetContent, SheetTrigger, SheetTitle } from "@/components/ui/sheet"
 import { useState } from "react"
 import { useAuth } from "@/lib/auth-context"
 import { Badge } from "@/components/ui/badge"
@@ -139,45 +139,78 @@ export function Header({ activeSection, onSectionChange }: HeaderProps) {
             <Heart className="h-5 w-5 text-accent" fill="currentColor" />
             <Sheet open={open} onOpenChange={setOpen}>
               <SheetTrigger asChild>
-                <Button variant="ghost" size="icon">
+                <Button 
+                  variant="ghost" 
+                  size="icon"
+                  className="rounded-full border-2 border-accent/30 hover:border-accent/50 hover:bg-accent/10 transition-all"
+                >
                   <Menu className="h-5 w-5" />
                 </Button>
               </SheetTrigger>
-              <SheetContent side="right" className="w-64 bg-card">
+              <SheetContent side="right" className="w-72 bg-card">
+                <SheetTitle className="sr-only">Menu de Navegação</SheetTitle>
                 {isAuthenticated && user && (
-                  <div className="flex items-center gap-2 p-3 rounded-md bg-secondary/50 mb-4">
-                    <User className="h-4 w-4 text-muted-foreground" />
+                  <div className="flex items-center gap-3 p-4 rounded-xl bg-accent/10 mb-6">
+                    <div className="flex h-12 w-12 items-center justify-center rounded-full bg-accent/20 border-2 border-accent/30">
+                      <User className="h-6 w-6 text-accent" />
+                    </div>
                     <div className="flex-1">
-                      <p className="text-sm font-medium">{user.name}</p>
+                      <p className="text-base font-semibold">{user.name}</p>
+                      <p className="text-xs text-muted-foreground">Convidado</p>
                       {user.hasCompanion && (
                         <Badge variant="outline" className="text-xs mt-1">+ acompanhante</Badge>
                       )}
                     </div>
                   </div>
                 )}
-                <nav className="flex flex-col gap-2 mt-8">
-                  {menuItems.map((item) => (
-                    <Button
-                      key={item.id}
-                      variant={activeSection === item.id ? "default" : "ghost"}
-                      className={`justify-start ${
-                        activeSection === item.id ? "bg-primary text-primary-foreground" : "text-foreground"
-                      }`}
-                      onClick={() => handleNavClick(item.id)}
-                    >
-                      {item.label}
-                    </Button>
-                  ))}
+                <nav className="flex flex-col gap-3 mt-8">
+                  {menuItems.map((item) => {
+                    const getIcon = () => {
+                      switch(item.id) {
+                        case "presentes": return Gift
+                        case "pix": return Wallet
+                        case "mensagens": return MessageCircle
+                        case "confirmacao": return Calendar
+                        case "sobre": return Heart
+                        default: return Home
+                      }
+                    }
+                    const Icon = getIcon()
+                    
+                    return (
+                      <Button
+                        key={item.id}
+                        variant="ghost"
+                        className={`justify-start h-auto py-3 px-3 rounded-xl transition-all ${
+                          activeSection === item.id 
+                            ? "bg-primary text-primary-foreground hover:bg-primary/90" 
+                            : "hover:bg-accent/10"
+                        }`}
+                        onClick={() => handleNavClick(item.id)}
+                      >
+                        <div className={`flex h-10 w-10 items-center justify-center rounded-full mr-3 ${
+                          activeSection === item.id
+                            ? "bg-primary-foreground/20"
+                            : "bg-accent/20"
+                        }`}>
+                          <Icon className="h-5 w-5" />
+                        </div>
+                        <span className="text-base">{item.label}</span>
+                      </Button>
+                    )
+                  })}
                   {isAuthenticated && (
                     <>
-                      <div className="h-px bg-border my-2" />
+                      <div className="h-px bg-border my-3" />
                       <Button
                         variant="ghost"
-                        className="justify-start text-muted-foreground hover:text-foreground"
+                        className="justify-start h-auto py-3 px-3 rounded-xl hover:bg-destructive/10 text-muted-foreground hover:text-destructive transition-all"
                         onClick={handleLogout}
                       >
-                        <LogOut className="h-4 w-4 mr-2" />
-                        Sair
+                        <div className="flex h-10 w-10 items-center justify-center rounded-full bg-destructive/10 mr-3">
+                          <LogOut className="h-5 w-5" />
+                        </div>
+                        <span className="text-base">Sair</span>
                       </Button>
                     </>
                   )}

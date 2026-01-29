@@ -105,7 +105,20 @@ export function GiftList({ onNavigateToMessages }: GiftListProps = {}) {
     }
   }, [])
 
-  const filteredGifts = gifts.filter((gift) => selectedCategory === "Todos" || gift.category === selectedCategory)
+  const filteredGifts = gifts
+    .filter((gift) => selectedCategory === "Todos" || gift.category === selectedCategory)
+    .sort((a, b) => {
+      // First, sort by reservation status (unreserved first)
+      const aReserved = reservedGifts.has(a.id)
+      const bReserved = reservedGifts.has(b.id)
+      
+      if (aReserved !== bReserved) {
+        return aReserved ? 1 : -1
+      }
+      
+      // Then sort alphabetically by name
+      return a.name.localeCompare(b.name, 'pt-BR')
+    })
 
   const handleReserve = async (giftId: string, method: "gift" | "pix") => {
     if (!isAuthenticated || !user) {

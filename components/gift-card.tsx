@@ -116,7 +116,6 @@ export const GiftCard = memo(function GiftCard({ gift, isReserved, currentUser, 
         {gift.isOpenValue && (
           <div className="flex items-center gap-2 text-lg font-medium text-accent">
             <Heart className="h-5 w-5" fill="currentColor" />
-            Valor livre
           </div>
         )}
 

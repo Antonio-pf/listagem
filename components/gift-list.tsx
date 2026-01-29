@@ -123,11 +123,19 @@ export function GiftList({ onNavigateToMessages }: GiftListProps = {}) {
       }
       setPixDialogOpen(true)
     } else {
+      // Set loading state immediately for instant feedback
+      setReservingGiftIds(prev => new Set(prev).add(giftId))
+
       // Check if already reserved before attempting
       const currentGifts = await getGifts()
       await loadReservations(currentGifts)
       
       if (reservedGifts.has(giftId)) {
+        setReservingGiftIds(prev => {
+          const newSet = new Set(prev)
+          newSet.delete(giftId)
+          return newSet
+        })
         toast({
           title: "Ops! Este presente acabou de ser reservado",
           description: "Outra pessoa reservou este item enquanto você estava escolhendo. Tente outro presente!",
@@ -135,9 +143,6 @@ export function GiftList({ onNavigateToMessages }: GiftListProps = {}) {
         })
         return
       }
-
-      // Set loading state for this specific gift
-      setReservingGiftIds(prev => new Set(prev).add(giftId))
 
       try {
         // Save reservation with user info (physical gift)

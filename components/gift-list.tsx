@@ -171,6 +171,7 @@ export function GiftList({ onNavigateToMessages }: GiftListProps = {}) {
             title: `Obrigado! ${gift?.name} reservado ❤️`,
             description: "Lembre-se de levar o presente no dia do evento. Sua generosidade significa muito para nós!",
             duration: 7000,
+            position: 'center',
           })
         } else {
           const currentGifts = await getGifts()
@@ -331,6 +332,7 @@ export function GiftList({ onNavigateToMessages }: GiftListProps = {}) {
           title: "Obrigado pela contribuição via PIX! ❤️",
           description: `Confirmamos sua contribuição de R$ ${customAmount}. Sua generosidade significa muito para nós!`,
           duration: 7000,
+          position: 'center',
         })
       } else {
         // Check if it's a duplicate reservation error

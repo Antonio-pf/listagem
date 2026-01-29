@@ -11,17 +11,22 @@ const ToastProvider = ToastPrimitives.Provider
 
 const ToastViewport = React.forwardRef<
   React.ElementRef<typeof ToastPrimitives.Viewport>,
-  React.ComponentPropsWithoutRef<typeof ToastPrimitives.Viewport>
->(({ className, ...props }, ref) => (
-  <ToastPrimitives.Viewport
-    ref={ref}
-    className={cn(
-      'fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-[100] flex max-h-screen w-full flex-col p-2 sm:p-4 sm:max-w-[500px] mx-2 sm:mx-0',
-      className,
-    )}
-    {...props}
-  />
-))
+  React.ComponentPropsWithoutRef<typeof ToastPrimitives.Viewport> & {
+    position?: 'top' | 'center'
+  }
+>(({ className, position = 'top', ...props }, ref) => {
+  const positionClasses = position === 'center' 
+    ? 'fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-[100] flex max-h-screen w-full flex-col p-2 sm:p-4 sm:max-w-[500px] mx-2 sm:mx-0'
+    : 'fixed top-0 left-1/2 -translate-x-1/2 z-[100] flex max-h-screen w-full flex-col-reverse p-2 sm:p-4 sm:max-w-[500px] mx-2 sm:mx-0'
+  
+  return (
+    <ToastPrimitives.Viewport
+      ref={ref}
+      className={cn(positionClasses, className)}
+      {...props}
+    />
+  )
+})
 ToastViewport.displayName = ToastPrimitives.Viewport.displayName
 
 const toastVariants = cva(

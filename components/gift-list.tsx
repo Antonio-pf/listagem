@@ -151,7 +151,6 @@ export function GiftList({ onNavigateToMessages }: GiftListProps = {}) {
             description: "Lembre-se de levar o presente no dia do evento. Sua generosidade significa muito para nós!",
             duration: 7000,
           })
-          setTimeout(() => setMessageReminderOpen(true), 1500)
         } else {
           const currentGifts = await getGifts()
           await loadReservations(currentGifts)
@@ -256,8 +255,6 @@ export function GiftList({ onNavigateToMessages }: GiftListProps = {}) {
           description: `Confirmamos sua contribuição de R$ ${customAmount}. Sua generosidade significa muito para nós!`,
           duration: 7000,
         })
-        // Show message reminder dialog after successful PIX contribution
-        setTimeout(() => setMessageReminderOpen(true), 1500)
       } else {
         // Check if it's a duplicate reservation error
         if (result.error?.includes("já foi reservado")) {

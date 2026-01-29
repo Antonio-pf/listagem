@@ -38,8 +38,10 @@ export function GiftList({ onNavigateToMessages }: GiftListProps = {}) {
   const [messageReminderOpen, setMessageReminderOpen] = useState(false)
   const [selectedGift, setSelectedGift] = useState<Gift | null>(null)
   const [customAmount, setCustomAmount] = useState("")
+  const [displayAmount, setDisplayAmount] = useState("")
   const [copied, setCopied] = useState(false)
   const [copiedPixCode, setCopiedPixCode] = useState(false)
+  const [amountError, setAmountError] = useState("")
   const [reservationsMap, setReservationsMap] = useState<Map<string, any>>(new Map())
   const [reservingGiftIds, setReservingGiftIds] = useState<Set<string>>(new Set())
   const { toast } = useToast()
@@ -130,10 +132,11 @@ export function GiftList({ onNavigateToMessages }: GiftListProps = {}) {
 
     if (method === "pix") {
       setSelectedGift(gift || null)
-      // Pre-populate with gift price if available
-      if (gift?.price) {
-        setCustomAmount(gift.price.toString())
-      }
+      // Pre-populate with gift price if available, or minimum value
+      const initialAmount = gift?.price || 50
+      setCustomAmount(initialAmount.toString())
+      setDisplayAmount(formatCurrency(initialAmount))
+      setAmountError("")
       setPixDialogOpen(true)
     } else {
       // Set loading state immediately for instant feedback
@@ -235,10 +238,55 @@ export function GiftList({ onNavigateToMessages }: GiftListProps = {}) {
     setTimeout(() => setCopied(false), 2000)
   }
 
+  const formatCurrency = (value: number): string => {
+    return value.toLocaleString('pt-BR', {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2
+    })
+  }
+
+  const parseCurrency = (value: string): number => {
+    // Remove all non-numeric characters except comma and dot
+    const cleanValue = value.replace(/[^\d,]/g, '').replace(',', '.')
+    return Number.parseFloat(cleanValue) || 0
+  }
+
+  const handleAmountChange = (value: string) => {
+    // Remove all non-numeric characters
+    const numericValue = value.replace(/\D/g, '')
+    
+    if (numericValue === '') {
+      setCustomAmount('')
+      setDisplayAmount('')
+      setAmountError('')
+      return
+    }
+
+    // Convert to number (cents)
+    const cents = Number.parseInt(numericValue, 10)
+    const amount = cents / 100
+
+    setCustomAmount(amount.toString())
+    setDisplayAmount(formatCurrency(amount))
+
+    // Validate minimum value
+    if (amount < 50) {
+      setAmountError('Valor mínimo: R$ 50,00')
+    } else {
+      setAmountError('')
+    }
+  }
+
   const handleCopyPixCode = () => {
     const amount = Number.parseFloat(customAmount) || 0
-    if (amount <= 0) {
-      alert("Por favor, insira um valor válido")
+    
+    if (amount < 50) {
+      setAmountError('Valor mínimo: R$ 50,00')
+      toast({
+        title: "Valor inválido",
+        description: "O valor mínimo para contribuição é R$ 50,00",
+        variant: "destructive",
+      })
       return
     }
 
@@ -259,9 +307,20 @@ export function GiftList({ onNavigateToMessages }: GiftListProps = {}) {
       return
     }
 
+    const amount = Number.parseFloat(customAmount) || 0
+    
+    if (amount < 50) {
+      setAmountError('Valor mínimo: R$ 50,00')
+      toast({
+        title: "Valor inválido",
+        description: "O valor mínimo para contribuição é R$ 50,00",
+        variant: "destructive",
+      })
+      return
+    }
+
     if (selectedGift) {
       // Save reservation with user info (PIX contribution)
-      const amount = Number.parseFloat(customAmount) || 0
       const giftPrice = selectedGift.price || amount
       const result = await saveReservation(selectedGift.id, user.id, user.name, user.hasCompanion, 'pix', giftPrice)
 
@@ -289,6 +348,8 @@ export function GiftList({ onNavigateToMessages }: GiftListProps = {}) {
     setPixDialogOpen(false)
     setSelectedGift(null)
     setCustomAmount("")
+    setDisplayAmount("")
+    setAmountError("")
   }
 
   return (
@@ -403,17 +464,21 @@ export function GiftList({ onNavigateToMessages }: GiftListProps = {}) {
 
           <div className="space-y-3 py-2">
             <div className="space-y-1.5">
-              <Label htmlFor="amount" className="text-sm">Valor (R$)</Label>
+              <Label htmlFor="amount" className="text-sm">
+                Valor (R$) - Mínimo: R$ 50,00
+              </Label>
               <Input
                 id="amount"
-                type="number"
-                inputMode="decimal"
-                pattern="[0-9]*"
-                placeholder="0,00"
-                value={customAmount}
-                onChange={(e) => setCustomAmount(e.target.value)}
-                className="bg-background/50"
+                type="text"
+                inputMode="numeric"
+                placeholder="50,00"
+                value={displayAmount}
+                onChange={(e) => handleAmountChange(e.target.value)}
+                className={`bg-background/50 ${amountError ? 'border-destructive' : ''}`}
               />
+              {amountError && (
+                <p className="text-xs text-destructive">{amountError}</p>
+              )}
             </div>
 
             <div className="space-y-1.5">
@@ -430,7 +495,7 @@ export function GiftList({ onNavigateToMessages }: GiftListProps = {}) {
               variant="outline"
               className="w-full bg-transparent"
               onClick={handleCopyPixCode}
-              disabled={!customAmount || Number.parseFloat(customAmount) <= 0}
+              disabled={!customAmount || Number.parseFloat(customAmount) < 50}
             >
               {copiedPixCode ? (
                 <>
@@ -453,7 +518,11 @@ export function GiftList({ onNavigateToMessages }: GiftListProps = {}) {
               </p>
             </div>
 
-            <Button onClick={handleConfirmPix} className="w-full gap-2">
+            <Button 
+              onClick={handleConfirmPix} 
+              className="w-full gap-2"
+              disabled={!customAmount || Number.parseFloat(customAmount) < 50}
+            >
               <Heart className="h-4 w-4" />
               Confirmar Envio
             </Button>

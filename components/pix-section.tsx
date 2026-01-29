@@ -12,6 +12,8 @@ export function PixSection() {
   const [copied, setCopied] = useState(false)
   const [copiedPixCode, setCopiedPixCode] = useState(false)
   const [customAmount, setCustomAmount] = useState("")
+  const [displayAmount, setDisplayAmount] = useState("")
+  const [amountError, setAmountError] = useState("")
   
   const pixKey = "mirian_sdf@hotmail.com"
   const recipientName = "Mirian"
@@ -23,10 +25,45 @@ export function PixSection() {
     setTimeout(() => setCopied(false), 2000)
   }
 
+  const formatCurrency = (value: number): string => {
+    return value.toLocaleString('pt-BR', {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2
+    })
+  }
+
+  const handleAmountChange = (value: string) => {
+    // Remove all non-numeric characters
+    const numericValue = value.replace(/\D/g, '')
+    
+    if (numericValue === '') {
+      setCustomAmount('')
+      setDisplayAmount('')
+      setAmountError('')
+      return
+    }
+
+    // Convert to number (cents)
+    const cents = Number.parseInt(numericValue, 10)
+    const amount = cents / 100
+
+    setCustomAmount(amount.toString())
+    setDisplayAmount(formatCurrency(amount))
+
+    // Validate minimum value
+    if (amount < 50) {
+      setAmountError('Valor mínimo: R$ 50,00')
+    } else {
+      setAmountError('')
+    }
+  }
+
   const handleCopyPixCode = () => {
     const amount = Number.parseFloat(customAmount) || 0
-    if (amount <= 0) {
-      alert("Por favor, insira um valor válido")
+    
+    if (amount < 50) {
+      setAmountError('Valor mínimo: R$ 50,00')
+      alert("O valor mínimo para contribuição é R$ 50,00")
       return
     }
 
@@ -60,19 +97,21 @@ export function PixSection() {
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="pix-amount">Valor da Contribuição (R$)</Label>
+              <Label htmlFor="pix-amount">Valor da Contribuição (R$) - Mínimo: R$ 50,00</Label>
               <Input
                 id="pix-amount"
-                type="number"
-                inputMode="decimal"
-                pattern="[0-9]*"
-                placeholder="0,00"
-                value={customAmount}
-                onChange={(e) => setCustomAmount(e.target.value)}
-                className="bg-background/50"
+                type="text"
+                inputMode="numeric"
+                placeholder="50,00"
+                value={displayAmount}
+                onChange={(e) => handleAmountChange(e.target.value)}
+                className={`bg-background/50 ${amountError ? 'border-destructive' : ''}`}
               />
+              {amountError && (
+                <p className="text-xs text-destructive">{amountError}</p>
+              )}
               <p className="text-xs text-muted-foreground">
-                💝 Sugerimos contribuições a partir de R$ 50,00, mas qualquer valor será muito apreciado!
+                💝 Digite o valor que deseja contribuir (mínimo R$ 50,00)
               </p>
             </div>
 
@@ -95,7 +134,7 @@ export function PixSection() {
                 variant="outline"
                 className="w-full bg-transparent"
                 onClick={handleCopyPixCode}
-                disabled={!customAmount || Number.parseFloat(customAmount) <= 0}
+                disabled={!customAmount || Number.parseFloat(customAmount) < 50}
               >
                 {copiedPixCode ? (
                   <>

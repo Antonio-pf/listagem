@@ -123,12 +123,7 @@ export function AttendanceSection({ onRequestLogin, onNavigateToSection }: Atten
           }, 400)
         }
         
-        toast({
-          title: "Confirmação enviada!",
-          description: existingConfirmation 
-            ? "Sua confirmação foi atualizada com sucesso." 
-            : "Obrigado por confirmar sua presença!",
-        })
+        // Don't show toast for successful confirmation
         await refreshAttendanceStatus()
         await loadExistingConfirmation()
         setIsEditing(false)

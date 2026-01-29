@@ -50,7 +50,7 @@ export function GiftDisplayCard({ gift, actions, imageComponent, showPrice = tru
         {showPrice && (
           <div className="flex items-center justify-between gap-2">
             <span className="text-sm sm:text-lg font-bold">
-              {gift.isOpenValue ? "Valor livre" : `R$ ${gift.price?.toFixed(2)}`}
+              R$ {gift.price?.toFixed(2)}
             </span>
             {actions && <div className="flex gap-1 sm:gap-2">{actions}</div>}
           </div>

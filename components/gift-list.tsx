@@ -455,10 +455,7 @@ export function GiftList({ onNavigateToMessages }: GiftListProps = {}) {
               Contribuir via PIX
             </DialogTitle>
             <DialogDescription className="text-sm">
-              {selectedGift?.isOpenValue 
-                ? "Valor livre - Sugestão: R$ 50,00+"
-                : `Valor: R$ ${selectedGift?.price?.toFixed(2) || '0,00'}`
-              }
+              Valor: R$ {selectedGift?.price?.toFixed(2) || '50,00'}
             </DialogDescription>
           </DialogHeader>
 

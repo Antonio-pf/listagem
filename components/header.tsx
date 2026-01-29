@@ -57,6 +57,7 @@ export function Header({ activeSection, onSectionChange }: HeaderProps) {
       initial={{ y: -100 }}
       animate={{ y: 0 }}
       transition={{ duration: 0.5, ease: [0.4, 0, 0.2, 1] }}
+      role="banner"
     >
       <div className="container mx-auto px-4 py-4 md:py-6">
         <div className="flex items-center justify-between">
@@ -73,18 +74,25 @@ export function Header({ activeSection, onSectionChange }: HeaderProps) {
             </div>
           </div>
 
-          <nav className="hidden md:flex items-center gap-1 relative">
+          <nav 
+            className="hidden md:flex items-center gap-1 relative" 
+            role="navigation"
+            aria-label="Navegação principal"
+          >
             {menuItems.map((item) => (
               <motion.div key={item.id} className="relative">
                 <motion.button
                   onClick={() => onSectionChange(item.id)}
-                  className={`px-4 py-2 text-sm rounded-md transition-colors ${
+                  className={`px-4 py-2 text-sm rounded-md transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 ${
                     activeSection === item.id
                       ? "text-primary-foreground"
                       : "text-foreground hover:bg-secondary/50"
                   }`}
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
+                  aria-current={activeSection === item.id ? "page" : undefined}
+                  aria-label={`Navegar para ${item.label}`}
+                  tabIndex={0}
                 >
                   {item.label}
                   {activeSection === item.id && (
@@ -93,6 +101,7 @@ export function Header({ activeSection, onSectionChange }: HeaderProps) {
                       className="absolute inset-0 bg-primary rounded-md -z-10"
                       initial={false}
                       transition={{ type: "spring", stiffness: 380, damping: 30 }}
+                      aria-hidden="true"
                     />
                   )}
                 </motion.button>
@@ -126,8 +135,9 @@ export function Header({ activeSection, onSectionChange }: HeaderProps) {
                       size="sm"
                       onClick={handleLogout}
                       className="text-sm text-muted-foreground hover:text-foreground"
+                      aria-label="Sair da conta"
                     >
-                      <LogOut className="h-4 w-4" />
+                      <LogOut className="h-4 w-4" aria-hidden="true" />
                     </Button>
                   </motion.div>
                 </motion.div>
@@ -142,12 +152,20 @@ export function Header({ activeSection, onSectionChange }: HeaderProps) {
                 <Button 
                   variant="ghost" 
                   size="icon"
-                  className="rounded-full border-2 border-accent/30 hover:border-accent/50 hover:bg-accent/10 transition-all"
+                  className="rounded-full border-2 border-accent/30 hover:border-accent/50 hover:bg-accent/10 transition-all min-h-[44px] min-w-[44px]"
+                  aria-label="Abrir menu de navegação"
+                  aria-expanded={open}
+                  aria-controls="mobile-menu"
                 >
-                  <Menu className="h-5 w-5" />
+                  <Menu className="h-5 w-5" aria-hidden="true" />
                 </Button>
               </SheetTrigger>
-              <SheetContent side="right" className="w-72 bg-card">
+              <SheetContent 
+                side="right" 
+                className="w-72 bg-card"
+                id="mobile-menu"
+                aria-label="Menu de navegação móvel"
+              >
                 <SheetTitle className="sr-only">Menu de Navegação</SheetTitle>
                 {isAuthenticated && user && (
                   <div className="flex items-center gap-3 p-4 rounded-xl bg-accent/10 mb-6">
@@ -163,7 +181,11 @@ export function Header({ activeSection, onSectionChange }: HeaderProps) {
                     </div>
                   </div>
                 )}
-                <nav className="flex flex-col gap-3 mt-8">
+                <nav 
+                  className="flex flex-col gap-3 mt-8"
+                  role="navigation"
+                  aria-label="Navegação móvel"
+                >
                   {menuItems.map((item) => {
                     const getIcon = () => {
                       switch(item.id) {
@@ -181,12 +203,14 @@ export function Header({ activeSection, onSectionChange }: HeaderProps) {
                       <Button
                         key={item.id}
                         variant="ghost"
-                        className={`justify-start h-auto py-3 px-3 rounded-xl transition-all ${
+                        className={`justify-start h-auto py-3 px-3 rounded-xl transition-all min-h-[44px] ${
                           activeSection === item.id 
                             ? "bg-primary text-primary-foreground hover:bg-primary/90" 
                             : "hover:bg-accent/10"
                         }`}
                         onClick={() => handleNavClick(item.id)}
+                        aria-current={activeSection === item.id ? "page" : undefined}
+                        aria-label={`Navegar para ${item.label}`}
                       >
                         <div className={`flex h-10 w-10 items-center justify-center rounded-full mr-3 ${
                           activeSection === item.id
@@ -204,11 +228,12 @@ export function Header({ activeSection, onSectionChange }: HeaderProps) {
                       <div className="h-px bg-border my-3" />
                       <Button
                         variant="ghost"
-                        className="justify-start h-auto py-3 px-3 rounded-xl hover:bg-destructive/10 text-muted-foreground hover:text-destructive transition-all"
+                        className="justify-start h-auto py-3 px-3 rounded-xl hover:bg-destructive/10 text-muted-foreground hover:text-destructive transition-all min-h-[44px]"
                         onClick={handleLogout}
+                        aria-label="Sair da conta"
                       >
                         <div className="flex h-10 w-10 items-center justify-center rounded-full bg-destructive/10 mr-3">
-                          <LogOut className="h-5 w-5" />
+                          <LogOut className="h-5 w-5" aria-hidden="true" />
                         </div>
                         <span className="text-base">Sair</span>
                       </Button>

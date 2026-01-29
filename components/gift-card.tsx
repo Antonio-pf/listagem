@@ -53,15 +53,18 @@ export const GiftCard = memo(function GiftCard({ gift, isReserved, currentUser, 
       whileHover="hover"
       whileTap="tap"
       transition={{ type: "spring", stiffness: 300, damping: 20 }}
+      role="article"
+      aria-label={`Presente: ${gift.name}`}
     >
-      <Card className="group overflow-hidden transition-all hover:shadow-lg border-border/60 bg-card/80 p-0">
-      <div className="relative h-58 sm:h-100 bg-muted overflow-hidden">
+      <Card className="group overflow-hidden transition-all hover:shadow-lg border-border/60 bg-card/80 p-0 focus-within:ring-2 focus-within:ring-primary focus-within:ring-offset-2">
+      <div className="relative h-58 sm:h-100 bg-muted overflow-hidden" role="img" aria-label={`Imagem do presente ${gift.name}`}>
         <Image
           src={gift.image || "/placeholder.svg"}
-          alt={gift.name}
+          alt={`${gift.name} - ${gift.description}`}
           fill
           className="object-cover transition-transform duration-300 group-hover:scale-105"
           priority={isReserved}
+          loading={isReserved ? "eager" : "lazy"}
         />
         <Badge 
           className={`absolute top-2 right-2 text-xs font-semibold flex items-center gap-1 border shadow-sm ${
@@ -76,11 +79,21 @@ export const GiftCard = memo(function GiftCard({ gift, isReserved, currentUser, 
           {gift.category}
         </Badge>
         {isReserved && (
-          <div className="absolute inset-0 bg-background/80 backdrop-blur-sm flex items-center justify-center z-10">
+          <div 
+            className="absolute inset-0 bg-background/80 backdrop-blur-sm flex items-center justify-center z-10"
+            role="status"
+            aria-live="polite"
+            aria-label={gift.reservedBy?.userName === currentUser ? "Você reservou este presente" : "Este presente já foi reservado"}
+          >
             <div className="flex flex-col items-center gap-2 text-center px-4">
-              <div className="flex h-16 w-16 items-center justify-center rounded-full bg-accent border border-accent/30">
-                <Check className="h-8 w-8 text-accent-foreground" />
-              </div>
+              <motion.div 
+                className="flex h-16 w-16 items-center justify-center rounded-full bg-accent border border-accent/30"
+                initial={{ scale: 0 }}
+                animate={{ scale: 1 }}
+                transition={{ type: "spring", stiffness: 200, damping: 15 }}
+              >
+                <Check className="h-8 w-8 text-accent-foreground" aria-hidden="true" />
+              </motion.div>
               <Badge variant="secondary" className="text-sm bg-secondary/80 text-secondary-foreground">
                 Reservado
               </Badge>
@@ -111,19 +124,21 @@ export const GiftCard = memo(function GiftCard({ gift, isReserved, currentUser, 
         {gift.isOpenValue ? (
           /* Open value gifts: always show contribution button */
           <Button 
-            className="w-full gap-2" 
+            className="w-full gap-2 min-h-[44px] touch-manipulation active:scale-95 transition-transform" 
             onClick={handleReservePix} 
             variant="default"
             disabled={isReserving}
+            aria-label={`Contribuir via PIX para ${gift.name}`}
+            aria-busy={isReserving}
           >
             {isReserving ? (
               <>
-                <div className="h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent" />
-                Reservando...
+                <div className="h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent" aria-hidden="true" />
+                <span>Processando...</span>
               </>
             ) : (
               <>
-                <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
                   <path
                     d="M7.05 2.05L3.05 6.05C2.65 6.45 2.65 7.1 3.05 7.5L7.05 11.5C7.45 11.9 8.1 11.9 8.5 11.5C8.9 11.1 8.9 10.45 8.5 10.05L6.45 8H15C15.55 8 16 7.55 16 7C16 6.45 15.55 6 15 6H6.45L8.5 3.95C8.9 3.55 8.9 2.9 8.5 2.5C8.1 2.1 7.45 2.1 7.05 2.05Z"
                     fill="currentColor"
@@ -133,7 +148,7 @@ export const GiftCard = memo(function GiftCard({ gift, isReserved, currentUser, 
                     fill="currentColor"
                   />
                 </svg>
-                Contribuir via PIX
+                <span>Contribuir via PIX</span>
               </>
             )}
           </Button>
@@ -141,29 +156,36 @@ export const GiftCard = memo(function GiftCard({ gift, isReserved, currentUser, 
           /* Physical gifts: show cancel button only for own reservations */
           <>
             {gift.reservedBy?.userName === currentUser && (
-              <Button className="w-full gap-2" onClick={handleCancelReservation} variant="destructive">
-                <X className="h-4 w-4" />
-                Mudei de ideia
+              <Button 
+                className="w-full gap-2 min-h-[44px] touch-manipulation active:scale-95 transition-transform" 
+                onClick={handleCancelReservation} 
+                variant="destructive"
+                aria-label={`Cancelar reserva de ${gift.name}`}
+              >
+                <X className="h-4 w-4" aria-hidden="true" />
+                <span>Mudei de ideia</span>
               </Button>
             )}
           </>
         ) : (
           /* Physical gifts: show reserve button */
           <Button 
-            className="w-full gap-2" 
+            className="w-full gap-2 min-h-[44px] touch-manipulation active:scale-95 transition-transform" 
             onClick={handleReserveGift} 
             variant="default"
             disabled={isReserving}
+            aria-label={`Reservar presente: ${gift.name}`}
+            aria-busy={isReserving}
           >
             {isReserving ? (
               <>
-                <div className="h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent" />
-                Reservando...
+                <div className="h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent" aria-hidden="true" />
+                <span>Reservando...</span>
               </>
             ) : (
               <>
-                <GiftIcon className="h-4 w-4" />
-                Quero dar este presente
+                <GiftIcon className="h-4 w-4" aria-hidden="true" />
+                <span>Quero dar este presente</span>
               </>
             )}
           </Button>

@@ -46,20 +46,19 @@ export function GiftList({ onNavigateToMessages }: GiftListProps = {}) {
   const { user, isAuthenticated } = useAuth()
 
   const loadGifts = async () => {
-    setLoading(true)
     const data = await getGifts()
     setGifts(data)
-    setLoading(false)
+    return data
   }
 
-  const loadReservations = async () => {
+  const loadReservations = async (giftsData: Gift[]) => {
     const reservations = await getReservations()
     
     // Only mark non-open-value gifts as reserved
     const reservedIds = new Set(
       reservations
         .filter(r => {
-          const gift = gifts.find(g => g.id === r.giftId)
+          const gift = giftsData.find(g => g.id === r.giftId)
           return gift && !gift.isOpenValue
         })
         .map(r => r.giftId)
@@ -70,9 +69,19 @@ export function GiftList({ onNavigateToMessages }: GiftListProps = {}) {
     setReservationsMap(reservationsById)
   }
 
+  const loadAllData = async () => {
+    setLoading(true)
+    try {
+      // Load gifts and reservations in parallel
+      const giftsData = await loadGifts()
+      await loadReservations(giftsData)
+    } finally {
+      setLoading(false)
+    }
+  }
+
   useEffect(() => {
-    loadGifts()
-    loadReservations()
+    loadAllData()
 
     const giftsSubscription = supabase
       .channel("gifts-changes")
@@ -84,9 +93,9 @@ export function GiftList({ onNavigateToMessages }: GiftListProps = {}) {
 
     const reservationsSubscription = supabase
       .channel("reservations-changes")
-      .on("postgres_changes", { event: "*", schema: "public", table: "reservations" }, () => {
-        // Reload reservations when any change occurs
-        loadReservations()
+      .on("postgres_changes", { event: "*", schema: "public", table: "reservations" }, async () => {
+        // Reload reservations when any change occurs (use current gifts state)
+        await loadReservations(gifts)
       })
       .subscribe()
 
@@ -115,7 +124,8 @@ export function GiftList({ onNavigateToMessages }: GiftListProps = {}) {
       setPixDialogOpen(true)
     } else {
       // Check if already reserved before attempting
-      await loadReservations()
+      const currentGifts = await getGifts()
+      await loadReservations(currentGifts)
       
       if (reservedGifts.has(giftId)) {
         toast({
@@ -134,7 +144,8 @@ export function GiftList({ onNavigateToMessages }: GiftListProps = {}) {
         const result = await saveReservation(giftId, user.id, user.name, user.hasCompanion, 'physical')
 
         if (result.success) {
-          await loadReservations()
+          const currentGifts = await getGifts()
+          await loadReservations(currentGifts)
           toast({
             title: `Obrigado! ${gift?.name} reservado ❤️`,
             description: "Lembre-se de levar o presente no dia do evento. Sua generosidade significa muito para nós!",
@@ -142,7 +153,8 @@ export function GiftList({ onNavigateToMessages }: GiftListProps = {}) {
           })
           setTimeout(() => setMessageReminderOpen(true), 1500)
         } else {
-          await loadReservations()
+          const currentGifts = await getGifts()
+          await loadReservations(currentGifts)
           
           toast({
             title: "Não foi possível reservar",
@@ -184,7 +196,8 @@ export function GiftList({ onNavigateToMessages }: GiftListProps = {}) {
     const result = await removeReservation(giftId, user.id)
     
     if (result.success) {
-      await loadReservations()
+      const currentGifts = await getGifts()
+      await loadReservations(currentGifts)
       toast({
         title: "Reserva cancelada",
         description: `${gift?.name} está disponível novamente.`,
@@ -236,7 +249,8 @@ export function GiftList({ onNavigateToMessages }: GiftListProps = {}) {
       const result = await saveReservation(selectedGift.id, user.id, user.name, user.hasCompanion, 'pix', giftPrice)
 
       if (result.success) {
-        await loadReservations()
+        const currentGifts = await getGifts()
+        await loadReservations(currentGifts)
         toast({
           title: "Obrigado pela contribuição via PIX! ❤️",
           description: `Confirmamos sua contribuição de R$ ${customAmount}. Sua generosidade significa muito para nós!`,
@@ -247,7 +261,8 @@ export function GiftList({ onNavigateToMessages }: GiftListProps = {}) {
       } else {
         // Check if it's a duplicate reservation error
         if (result.error?.includes("já foi reservado")) {
-          await loadReservations() // Refresh to show updated state
+          const currentGifts = await getGifts()
+          await loadReservations(currentGifts) // Refresh to show updated state
         }
         toast({
           title: "Não foi possível confirmar",

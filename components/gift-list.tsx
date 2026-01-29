@@ -369,25 +369,23 @@ export function GiftList({ onNavigateToMessages }: GiftListProps = {}) {
       )}
 
       <Dialog open={pixDialogOpen} onOpenChange={setPixDialogOpen}>
-        <DialogContent className="sm:max-w-md bg-card border-border/60">
+        <DialogContent className="sm:max-w-md max-h-[90vh] overflow-y-auto bg-card border-border/60">
           <DialogHeader>
-            <DialogTitle className="font-serif flex items-center gap-2 text-foreground">
+            <DialogTitle className="font-serif flex items-center gap-2 text-foreground pr-8">
               <Heart className="h-5 w-5 text-accent" fill="currentColor" />
               Contribuir via PIX
             </DialogTitle>
-            <DialogDescription>
+            <DialogDescription className="text-sm">
               {selectedGift?.isOpenValue 
-                ? "Qualquer valor é bem-vindo! Sugerimos contribuições a partir de R$ 50,00 ❤️"
-                : `Valor estimado: R$ ${selectedGift?.price?.toFixed(2) || '0,00'}`
+                ? "Valor livre - Sugestão: R$ 50,00+"
+                : `Valor: R$ ${selectedGift?.price?.toFixed(2) || '0,00'}`
               }
             </DialogDescription>
           </DialogHeader>
 
-          <div className="space-y-4 py-4">
-            <div className="space-y-2">
-              <Label htmlFor="amount">
-                {selectedGift?.isOpenValue ? "Valor da Contribuição (R$)" : "Valor a Contribuir (R$)"}
-              </Label>
+          <div className="space-y-3 py-2">
+            <div className="space-y-1.5">
+              <Label htmlFor="amount" className="text-sm">Valor (R$)</Label>
               <Input
                 id="amount"
                 type="number"
@@ -398,64 +396,43 @@ export function GiftList({ onNavigateToMessages }: GiftListProps = {}) {
                 onChange={(e) => setCustomAmount(e.target.value)}
                 className="bg-background/50"
               />
-              {selectedGift?.price && !selectedGift.isOpenValue && (
-                <p className="text-xs text-muted-foreground">
-                  Valor sugerido: R$ {selectedGift.price.toFixed(2)} (você pode ajustar se preferir)
-                </p>
-              )}
-              {selectedGift?.isOpenValue && (
-                <p className="text-xs text-muted-foreground">
-                  💝 Sugerimos contribuições a partir de R$ 50,00, mas qualquer valor será muito apreciado!
-                </p>
-              )}
             </div>
 
-            <div className="space-y-2">
-              <Label>Chave PIX</Label>
+            <div className="space-y-1.5">
+              <Label className="text-sm">Chave PIX</Label>
               <div className="flex items-center gap-2">
-                <Input readOnly value="mirian_sdf@hotmail.com" className="font-mono text-sm bg-background/50" />
+                <Input readOnly value="mirian_sdf@hotmail.com" className="font-mono text-xs bg-background/50" />
                 <Button size="icon" variant="outline" onClick={handleCopyPix} className="shrink-0 bg-transparent">
                   {copied ? <Check className="h-4 w-4" /> : <Copy className="h-4 w-4" />}
                 </Button>
               </div>
-              <p className="text-xs text-muted-foreground">Clique no botão para copiar a chave PIX</p>
             </div>
 
-            <div className="space-y-2">
-              <Label>PIX Copia e Cola</Label>
-              <Button
-                variant="outline"
-                className="w-full bg-transparent"
-                onClick={handleCopyPixCode}
-                disabled={!customAmount || Number.parseFloat(customAmount) <= 0}
-              >
-                {copiedPixCode ? (
-                  <>
-                    <Check className="h-4 w-4 mr-2" />
-                    Código Copiado!
-                  </>
-                ) : (
-                  <>
-                    <Copy className="h-4 w-4 mr-2" />
-                    Gerar e Copiar Código PIX
-                  </>
-                )}
-              </Button>
-              <p className="text-xs text-muted-foreground">
-                Cole o código no seu app bancário para pagar com um clique
+            <Button
+              variant="outline"
+              className="w-full bg-transparent"
+              onClick={handleCopyPixCode}
+              disabled={!customAmount || Number.parseFloat(customAmount) <= 0}
+            >
+              {copiedPixCode ? (
+                <>
+                  <Check className="h-4 w-4 mr-2" />
+                  Código Copiado!
+                </>
+              ) : (
+                <>
+                  <Copy className="h-4 w-4 mr-2" />
+                  Gerar Código PIX Copia e Cola
+                </>
+              )}
+            </Button>
+
+            <div className="rounded-lg bg-secondary/20 border border-border/30 p-3">
+              <p className="text-xs text-muted-foreground leading-relaxed">
+                1. Cole o código no app bancário ou copie a chave<br />
+                2. Confirme o pagamento<br />
+                3. Clique em "Confirmar Envio" abaixo
               </p>
-            </div>
-
-            <div className="rounded-lg bg-secondary/30 border border-border/50 p-4 space-y-2">
-              <h4 className="font-medium text-sm text-foreground">Como funciona?</h4>
-              <ol className="text-sm text-muted-foreground space-y-1 list-decimal list-inside">
-                <li>Defina o valor da contribuição</li>
-                <li>Clique em "Gerar e Copiar Código PIX"</li>
-                <li>Abra seu aplicativo bancário</li>
-                <li>Cole o código PIX ou use a chave manualmente</li>
-                <li>Confirme a transferência</li>
-                <li>Clique em "Confirmar Envio"</li>
-              </ol>
             </div>
 
             <Button onClick={handleConfirmPix} className="w-full gap-2">

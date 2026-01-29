@@ -33,7 +33,7 @@ INSERT INTO gifts (id, name, description, image, category, price, is_open_value)
 ('24', 'Kit Churrasco', 'Conjunto completo de utensílios para churrasco', 'https://images.unsplash.com/photo-1555939594-58d7cb561ad1?w=800&h=600&fit=crop', 'Cozinha', 280.00, false),
 ('25', 'Kit Passadeira Cozinha', 'Conjunto de utensílios para passar e organizar a cozinha', 'https://images.unsplash.com/photo-1556911220-bff31c812dba?w=800&h=600&fit=crop', 'Cozinha', 190.00, false),
 ('26', 'Umidificador de Ar', 'Umidificador de ar ultrassônico para ambientes', 'https://images.unsplash.com/photo-1585771724684-38269d6639fd?w=800&h=600&fit=crop', 'Quarto', 220.00, false),
-('27', 'Contribuição Livre', 'Contribua com o valor que desejar para nos ajudar a mobiliar nossa casa nova', '/gift-box-open-present.jpg', 'Outros', NULL, true)
+('27', 'Contribuição: Lar doce lar', 'Sua presença é essencial! Caso deseje nos presentear e não encontre algo na lista, sugerimos uma contribuição de R$ 50,00 via Pix para nos ajudar com os detalhes finais da nossa decoração.', '/gift-box-open-present.jpg', 'Outros', NULL, true)
 ON CONFLICT (id) DO NOTHING;
 
 -- ============================================

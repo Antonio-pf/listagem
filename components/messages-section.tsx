@@ -10,15 +10,13 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { MessageCircle, Heart, Loader2 } from "lucide-react"
-import { saveMessage, getMessages } from "@/lib/message-storage"
+import { saveMessage, getMessages } from "@/lib/services/message-service"
 import { useToast } from "@/hooks/use-toast"
 import { useAuth } from "@/lib/auth-context"
 import type { Database } from "@/lib/database.types"
 import { useScrollAnimation } from "@/hooks/use-scroll-animation"
 import { scrollRevealVariants, staggerContainerVariants, staggerItemVariants } from "@/lib/animation-variants"
 import { MessageSkeleton } from "@/components/skeletons/message-skeleton"
-
-type DbMessage = Database["public"]["Tables"]["messages"]["Row"]
 
 interface Message {
   id: string
@@ -60,11 +58,11 @@ export function MessagesSection() {
     async function loadMessages() {
       try {
         const dbMessages = await getMessages()
-        const formattedMessages: Message[] = dbMessages.map((msg: DbMessage) => ({
+        const formattedMessages: Message[] = dbMessages.map((msg) => ({
           id: msg.id,
-          name: msg.guest_name,
+          name: msg.guestName,
           message: msg.message,
-          date: formatMessageDate(msg.created_at),
+          date: formatMessageDate(msg.createdAt),
         }))
         setMessages(formattedMessages)
       } catch (error) {
@@ -107,9 +105,9 @@ export function MessagesSection() {
             msg.id === tempMessage.id
               ? {
                   id: savedMessage.id,
-                  name: savedMessage.guest_name,
+                  name: savedMessage.guestName,
                   message: savedMessage.message,
-                  date: formatMessageDate(savedMessage.created_at),
+                  date: formatMessageDate(savedMessage.createdAt),
                 }
               : msg
           )

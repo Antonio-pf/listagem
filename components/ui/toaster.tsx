@@ -20,38 +20,46 @@ export function Toaster() {
   return (
     <ToastProvider>
       {/* Top positioned toasts (default) */}
-      {topToasts.map(function ({ id, title, description, action, position, ...props }) {
-        return (
-          <Toast key={id} {...props}>
-            <div className="grid gap-1">
-              {title && <ToastTitle>{title}</ToastTitle>}
-              {description && (
-                <ToastDescription>{description}</ToastDescription>
-              )}
-            </div>
-            {action}
-            <ToastClose />
-          </Toast>
-        )
-      })}
-      <ToastViewport position="top" />
+      {topToasts.length > 0 && (
+        <>
+          {topToasts.map(function ({ id, title, description, action, position, ...props }) {
+            return (
+              <Toast key={id} {...props}>
+                <div className="grid gap-1">
+                  {title && <ToastTitle>{title}</ToastTitle>}
+                  {description && (
+                    <ToastDescription>{description}</ToastDescription>
+                  )}
+                </div>
+                {action}
+                <ToastClose />
+              </Toast>
+            )
+          })}
+          <ToastViewport position="top" />
+        </>
+      )}
 
       {/* Center positioned toasts */}
-      {centerToasts.map(function ({ id, title, description, action, position, ...props }) {
-        return (
-          <Toast key={id} {...props}>
-            <div className="grid gap-1">
-              {title && <ToastTitle>{title}</ToastTitle>}
-              {description && (
-                <ToastDescription>{description}</ToastDescription>
-              )}
-            </div>
-            {action}
-            <ToastClose />
-          </Toast>
-        )
-      })}
-      <ToastViewport position="center" />
+      {centerToasts.length > 0 && (
+        <>
+          {centerToasts.map(function ({ id, title, description, action, position, ...props }) {
+            return (
+              <Toast key={id} {...props}>
+                <div className="grid gap-1">
+                  {title && <ToastTitle>{title}</ToastTitle>}
+                  {description && (
+                    <ToastDescription>{description}</ToastDescription>
+                  )}
+                </div>
+                {action}
+                <ToastClose />
+              </Toast>
+            )
+          })}
+          <ToastViewport position="center" />
+        </>
+      )}
     </ToastProvider>
   )
 }

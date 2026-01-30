@@ -77,6 +77,11 @@ export function AttendanceSection({ onRequestLogin, onNavigateToSection }: Atten
       return
     }
 
+    // Prevent multiple submissions
+    if (isSubmitting) {
+      return
+    }
+
     setIsSubmitting(true)
 
     try {
@@ -87,9 +92,14 @@ export function AttendanceSection({ onRequestLogin, onNavigateToSection }: Atten
       })
 
       if (result.success) {
-        // Save message to messages table if provided
-        if (additionalNotes.trim()) {
-          await saveMessage(user.name, additionalNotes.trim())
+        // Save message to messages table if provided (only on new confirmation, not on edit)
+        if (additionalNotes.trim() && !existingConfirmation) {
+          try {
+            await saveMessage(user.name, additionalNotes.trim())
+          } catch (error) {
+            console.error("Error saving message:", error)
+            // Don't fail the entire confirmation if message save fails
+          }
         }
         
         // Show confetti effect if attending

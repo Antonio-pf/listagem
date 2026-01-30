@@ -3,6 +3,16 @@
 import React, { createContext, useContext, useState, useEffect, type ReactNode } from "react"
 import { supabase } from "./supabase"
 
+// Normalize name for comparison (remove accents, lowercase, trim)
+function normalizeName(name: string): string {
+  return name
+    .toLowerCase()
+    .trim()
+    .normalize('NFD') // Decompose accented characters
+    .replace(/[\u0300-\u036f]/g, '') // Remove diacritics
+    .replace(/\s+/g, ' ') // Replace multiple spaces with single space
+}
+
 export interface User {
   id: string
   name: string
@@ -72,11 +82,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const login = async (name: string, hasCompanion: boolean) => {
     try {
-      // Check if guest already exists
+      const normalizedName = normalizeName(name)
+      
+      // Check if guest already exists by normalized name
       const { data: existingGuest } = await supabase
         .from("guests")
         .select("*")
-        .eq("name", name)
+        .eq("normalized_name", normalizedName)
         .eq("has_companion", hasCompanion)
         .maybeSingle() as { data: any }
 
@@ -91,6 +103,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           .from("guests")
           .insert({
             name,
+            normalized_name: normalizedName,
             has_companion: hasCompanion,
           } as any)
           .select()

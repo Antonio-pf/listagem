@@ -13,7 +13,8 @@ import {
 export function Toaster() {
   const { toasts } = useToast()
 
-  const topToasts = toasts.filter(t => t.position === 'top' || !t.position)
+  // Separate toasts by position
+  const topToasts = toasts.filter(t => !t.position || t.position === 'top')
   const centerToasts = toasts.filter(t => t.position === 'center')
 
   return (

@@ -332,7 +332,6 @@ export function GiftList({ onNavigateToMessages }: GiftListProps = {}) {
           title: "Obrigado pela contribuição via PIX! ❤️",
           description: `Confirmamos sua contribuição de R$ ${customAmount}. Sua generosidade significa muito para nós!`,
           duration: 7000,
-          position: 'center',
         })
       } else {
         // Check if it's a duplicate reservation error

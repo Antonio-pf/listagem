@@ -13,9 +13,14 @@ import {
 export function Toaster() {
   const { toasts } = useToast()
 
+  // Separate toasts by position
+  const topToasts = toasts.filter(t => !t.position || t.position === 'top')
+  const centerToasts = toasts.filter(t => t.position === 'center')
+
   return (
     <ToastProvider>
-      {toasts.map(function ({ id, title, description, action, position, ...props }) {
+      {/* Top positioned toasts (default) */}
+      {topToasts.map(function ({ id, title, description, action, position, ...props }) {
         return (
           <Toast key={id} {...props}>
             <div className="grid gap-1">
@@ -29,7 +34,24 @@ export function Toaster() {
           </Toast>
         )
       })}
-      <ToastViewport />
+      <ToastViewport position="top" />
+
+      {/* Center positioned toasts */}
+      {centerToasts.map(function ({ id, title, description, action, position, ...props }) {
+        return (
+          <Toast key={id} {...props}>
+            <div className="grid gap-1">
+              {title && <ToastTitle>{title}</ToastTitle>}
+              {description && (
+                <ToastDescription>{description}</ToastDescription>
+              )}
+            </div>
+            {action}
+            <ToastClose />
+          </Toast>
+        )
+      })}
+      <ToastViewport position="center" />
     </ToastProvider>
   )
 }

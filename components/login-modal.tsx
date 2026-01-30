@@ -15,7 +15,8 @@ interface LoginModalProps {
 }
 
 export function LoginModal({ open, onOpenChange }: LoginModalProps) {
-  const [name, setName] = useState("")
+  const [firstName, setFirstName] = useState("")
+  const [lastName, setLastName] = useState("")
   const [hasCompanion, setHasCompanion] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState("")
@@ -25,12 +26,13 @@ export function LoginModal({ open, onOpenChange }: LoginModalProps) {
     e.preventDefault()
     setError("")
     
-    if (name.trim() && !isLoading) {
+    if (firstName.trim() && lastName.trim() && !isLoading) {
       setIsLoading(true)
       try {
-        await login(name.trim(), hasCompanion)
+        await login(firstName.trim(), lastName.trim(), hasCompanion)
         onOpenChange(false)
-        setName("")
+        setFirstName("")
+        setLastName("")
         setHasCompanion(false)
         setError("")
       } catch (error) {
@@ -78,31 +80,53 @@ export function LoginModal({ open, onOpenChange }: LoginModalProps) {
             </div>
           )}
           
-          <div className="space-y-2">
-            <Label htmlFor="name" className="flex items-center gap-2 text-sm font-medium">
-              <User className="h-4 w-4 text-muted-foreground" aria-hidden="true" />
-              Seu Nome Completo
-            </Label>
-            <Input
-              id="name"
-              type="text"
-              placeholder="Ex: Maria Silva"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              className="bg-background/50 border-border/80 focus:border-accent transition-colors h-11 min-h-[44px]"
-              required
-              aria-required="true"
-              aria-invalid={!!error}
-              aria-describedby={error ? "name-error" : undefined}
-              autoFocus
-              autoComplete="name"
-              disabled={isLoading}
-            />
-            {error && (
-              <p id="name-error" className="text-xs text-destructive">
-                {error}
-              </p>
-            )}
+          <div className="space-y-4">
+            <div className="space-y-2">
+              <Label htmlFor="firstName" className="flex items-center gap-2 text-sm font-medium">
+                <User className="h-4 w-4 text-muted-foreground" aria-hidden="true" />
+                Primeiro Nome
+              </Label>
+              <Input
+                id="firstName"
+                type="text"
+                placeholder="Ex: Maria"
+                value={firstName}
+                onChange={(e) => setFirstName(e.target.value)}
+                className="bg-background/50 border-border/80 focus:border-accent transition-colors h-11 min-h-[44px]"
+                required
+                aria-required="true"
+                aria-invalid={!!error}
+                autoFocus
+                autoComplete="given-name"
+                disabled={isLoading}
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="lastName" className="flex items-center gap-2 text-sm font-medium">
+                <User className="h-4 w-4 text-muted-foreground" aria-hidden="true" />
+                Sobrenome
+              </Label>
+              <Input
+                id="lastName"
+                type="text"
+                placeholder="Ex: Silva"
+                value={lastName}
+                onChange={(e) => setLastName(e.target.value)}
+                className="bg-background/50 border-border/80 focus:border-accent transition-colors h-11 min-h-[44px]"
+                required
+                aria-required="true"
+                aria-invalid={!!error}
+                aria-describedby={error ? "name-error" : undefined}
+                autoComplete="family-name"
+                disabled={isLoading}
+              />
+              {error && (
+                <p id="name-error" className="text-xs text-destructive">
+                  {error}
+                </p>
+              )}
+            </div>
           </div>
 
           <div className="space-y-3">
@@ -133,7 +157,7 @@ export function LoginModal({ open, onOpenChange }: LoginModalProps) {
           <Button 
             type="submit" 
             className="w-full gap-2 h-11 min-h-[44px] text-base font-medium shadow-md hover:shadow-lg transition-all touch-manipulation active:scale-95" 
-            disabled={!name.trim() || isLoading}
+            disabled={!firstName.trim() || !lastName.trim() || isLoading}
             aria-busy={isLoading}
             aria-label={isLoading ? "Processando login" : "Entrar e escolher presentes"}
           >

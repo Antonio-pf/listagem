@@ -23,7 +23,7 @@ export interface User {
 
 export interface AuthContextType {
   user: User | null
-  login: (name: string, hasCompanion: boolean) => Promise<void>
+  login: (firstName: string, lastName: string, hasCompanion: boolean) => Promise<void>
   logout: () => void
   refreshAttendanceStatus: () => Promise<void>
   isAuthenticated: boolean
@@ -80,9 +80,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     loadUser()
   }, [])
 
-  const login = async (name: string, hasCompanion: boolean) => {
+  const login = async (firstName: string, lastName: string, hasCompanion: boolean) => {
     try {
-      const normalizedName = normalizeName(name)
+      const fullName = `${firstName} ${lastName}`
+      const normalizedName = normalizeName(fullName)
       
       // Check if guest already exists by normalized name
       const { data: existingGuest } = await supabase
@@ -102,7 +103,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         const { data, error } = await supabase
           .from("guests")
           .insert({
-            name,
+            name: fullName,
             normalized_name: normalizedName,
             has_companion: hasCompanion,
           } as any)

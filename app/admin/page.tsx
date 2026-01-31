@@ -2,6 +2,7 @@ import { getAdminStats, getAllReservations, getAllGuests, getAllMessages, getEve
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Users, Gift, MessageCircle, UserCheck, Armchair, Table2 } from 'lucide-react'
 import { ExportButton } from '@/components/export-button'
+import { formatBrazilDate } from '@/lib/utils'
 
 // Disable caching for real-time data updates
 export const dynamic = 'force-dynamic'
@@ -197,7 +198,7 @@ export default async function AdminDashboard() {
                     </td>
                     <td className="py-3 px-3 text-sm hidden md:table-cell">{reservation.has_companion ? 'Sim' : 'Não'}</td>
                     <td className="py-3 px-3 text-xs text-muted-foreground hidden lg:table-cell">
-                      {new Date(reservation.reserved_at).toLocaleString('pt-BR', { dateStyle: 'short', timeStyle: 'short' })}
+                      {formatBrazilDate(reservation.reserved_at)}
                     </td>
                   </tr>
                 ))}
@@ -250,7 +251,7 @@ export default async function AdminDashboard() {
                       )}
                     </td>
                     <td className="py-3 px-3 text-xs text-muted-foreground hidden md:table-cell">
-                      {new Date(guest.created_at).toLocaleString('pt-BR', { dateStyle: 'short', timeStyle: 'short' })}
+                      {formatBrazilDate(guest.created_at)}
                     </td>
                   </tr>
                 ))}
@@ -301,7 +302,7 @@ export default async function AdminDashboard() {
                       {attendance.additional_notes || '-'}
                     </td>
                     <td className="py-3 px-3 text-xs text-muted-foreground hidden lg:table-cell">
-                      {new Date(attendance.confirmed_at).toLocaleString('pt-BR', { dateStyle: 'short', timeStyle: 'short' })}
+                      {formatBrazilDate(attendance.confirmed_at)}
                     </td>
                   </tr>
                 ))}
@@ -340,7 +341,7 @@ export default async function AdminDashboard() {
                     <td className="py-3 px-3 text-sm">{message.guest_name}</td>
                     <td className="py-3 px-3 text-sm max-w-[200px] sm:max-w-md truncate">{message.message}</td>
                     <td className="py-3 px-3 text-xs text-muted-foreground hidden md:table-cell">
-                      {new Date(message.created_at).toLocaleString('pt-BR', { dateStyle: 'short', timeStyle: 'short' })}
+                      {formatBrazilDate(message.created_at)}
                     </td>
                   </tr>
                 ))}

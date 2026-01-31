@@ -74,6 +74,48 @@ export default async function AdminDashboard() {
         </Card>
       </div>
 
+      {/* Attendance Confirmation Statistics Card */}
+      <Card className="border-l-4 border-l-teal-500">
+        <CardHeader className="px-4 sm:px-6">
+          <CardTitle className="flex items-center gap-2 text-base sm:text-lg font-serif">
+            <UserCheck className="h-4 w-4 sm:h-5 sm:w-5 text-teal-500" />
+            <span>Confirmações de Presença</span>
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="px-4 sm:px-6">
+          <div className="grid gap-3 sm:gap-4 grid-cols-2 lg:grid-cols-4">
+            <div className="space-y-1">
+              <p className="text-xs sm:text-sm text-muted-foreground">Total Confirmado</p>
+              <p className="text-xl sm:text-2xl font-bold text-teal-600">{stats.totalAttendanceConfirmed}</p>
+              <p className="text-xs text-muted-foreground">
+                {stats.totalGuests > 0 ? Math.round((stats.totalAttendanceConfirmed / stats.totalGuests) * 100) : 0}% dos convidados
+              </p>
+            </div>
+            <div className="space-y-1">
+              <p className="text-xs sm:text-sm text-muted-foreground">Confirmou Presença</p>
+              <p className="text-xl sm:text-2xl font-bold text-green-600">{stats.totalAttending}</p>
+              <p className="text-xs text-muted-foreground">
+                {stats.totalAttendanceConfirmed > 0 ? Math.round((stats.totalAttending / stats.totalAttendanceConfirmed) * 100) : 0}% das confirmações
+              </p>
+            </div>
+            <div className="space-y-1">
+              <p className="text-xs sm:text-sm text-muted-foreground">Não Comparecerá</p>
+              <p className="text-xl sm:text-2xl font-bold text-red-600">{stats.totalNotAttending}</p>
+              <p className="text-xs text-muted-foreground">
+                {stats.totalAttendanceConfirmed > 0 ? Math.round((stats.totalNotAttending / stats.totalAttendanceConfirmed) * 100) : 0}% das confirmações
+              </p>
+            </div>
+            <div className="space-y-1">
+              <p className="text-xs sm:text-sm text-muted-foreground">Pendente</p>
+              <p className="text-xl sm:text-2xl font-bold text-yellow-600">{stats.totalPendingConfirmation}</p>
+              <p className="text-xs text-muted-foreground">
+                {stats.totalGuests > 0 ? Math.round((stats.totalPendingConfirmation / stats.totalGuests) * 100) : 0}% dos convidados
+              </p>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+
       {/* Event Resources Card */}
       <Card className="border-l-4 border-l-indigo-500">
         <CardHeader className="px-4 sm:px-6">

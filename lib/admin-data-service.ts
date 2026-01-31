@@ -96,8 +96,59 @@ export async function getAdminStats(): Promise<AdminStats> {
   }
 }
 
+export async function calculateEventResourcesFromAttendance(): Promise<{
+  totalPeople: number
+  tablesNeeded: number
+  chairsNeeded: number
+  platesNeeded: number
+  cupsNeeded: number
+}> {
+  try {
+    // Get all attendances where will_attend = true
+    const { data: attendances, error } = await supabase
+      .from('event_attendance')
+      .select('companion_count')
+      .eq('will_attend', true) as { data: { companion_count: number }[] | null; error: any }
+
+    if (error) throw error
+
+    // Calculate total people: number of guests attending + their companions
+    const totalGuests = attendances?.length || 0
+    const totalCompanions = attendances?.reduce((sum, a) => sum + (a.companion_count || 0), 0) || 0
+    const totalPeople = totalGuests + totalCompanions
+    
+    // Mesas: assuming 4 people per table
+    const tablesNeeded = Math.ceil(totalPeople / 4)
+    
+    // Cadeiras: one chair per person
+    const chairsNeeded = totalPeople
+    
+    // Estimate additional resources
+    const platesNeeded = totalPeople
+    const cupsNeeded = totalPeople
+    
+    return {
+      totalPeople,
+      tablesNeeded,
+      chairsNeeded,
+      platesNeeded,
+      cupsNeeded
+    }
+  } catch (error) {
+    console.error('Error calculating event resources from attendance:', error)
+    // Return default values if error
+    return {
+      totalPeople: 0,
+      tablesNeeded: 0,
+      chairsNeeded: 0,
+      platesNeeded: 0,
+      cupsNeeded: 0
+    }
+  }
+}
+
 export function calculateEventResources(totalGuests: number, guestsWithCompanions: number) {
-  // Total people = guests + companions
+  // Total people = guests + companions (assuming each guest with companion brings 1 companion)
   const totalPeople = totalGuests + guestsWithCompanions
   
   // Mesas: assuming 4 people per table
@@ -239,8 +290,8 @@ export async function getAllAttendances(): Promise<AttendanceDetail[]> {
 
 export async function getEventResources() {
   try {
-    const stats = await getAdminStats()
-    return calculateEventResources(stats.totalGuests, stats.guestsWithCompanions)
+    // Use real attendance data for more accurate resource calculation
+    return await calculateEventResourcesFromAttendance()
   } catch (error) {
     console.error('Error calculating event resources:', error)
     throw error

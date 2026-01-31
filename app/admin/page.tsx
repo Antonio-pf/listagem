@@ -1,21 +1,24 @@
-import { getAdminStats, getAllReservations, getAllGuests, getAllMessages, getEventResources, getAllAttendances } from '@/lib/admin-data-service'
+import { getAdminStats, getAllReservations, getAllGuests, getAllMessages, getEventResources, getAllAttendances, getPendingConfirmationGuests } from '@/lib/admin-data-service'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Users, Gift, MessageCircle, UserCheck, Armchair, Table2 } from 'lucide-react'
+import { Users, Gift, MessageCircle, UserCheck, Armchair, Table2, AlertCircle } from 'lucide-react'
 import { ExportButton } from '@/components/export-button'
 import { formatBrazilDate } from '@/lib/utils'
+import { PendingGuestsModal } from '@/components/pending-guests-modal'
+import { Button } from '@/components/ui/button'
 
 // Disable caching for real-time data updates
 export const dynamic = 'force-dynamic'
 export const revalidate = 0
 
 export default async function AdminDashboard() {
-  const [stats, reservations, guests, messages, eventResources, attendances] = await Promise.all([
+  const [stats, reservations, guests, messages, eventResources, attendances, pendingGuests] = await Promise.all([
     getAdminStats(),
     getAllReservations(),
     getAllGuests(),
     getAllMessages(),
     getEventResources(),
-    getAllAttendances()
+    getAllAttendances(),
+    getPendingConfirmationGuests()
   ])
 
   return (
@@ -108,7 +111,19 @@ export default async function AdminDashboard() {
             </div>
             <div className="space-y-1">
               <p className="text-xs sm:text-sm text-muted-foreground">Pendente</p>
-              <p className="text-xl sm:text-2xl font-bold text-yellow-600">{stats.totalPendingConfirmation}</p>
+              <div className="flex items-center gap-2">
+                <p className="text-xl sm:text-2xl font-bold text-yellow-600">{stats.totalPendingConfirmation}</p>
+                {stats.totalPendingConfirmation > 0 && (
+                  <PendingGuestsModal
+                    pendingGuests={pendingGuests}
+                    trigger={
+                      <Button variant="ghost" size="icon" className="h-6 w-6 hover:bg-yellow-100 dark:hover:bg-yellow-900/30">
+                        <AlertCircle className="h-4 w-4 text-yellow-600" />
+                      </Button>
+                    }
+                  />
+                )}
+              </div>
               <p className="text-xs text-muted-foreground">
                 {stats.totalGuests > 0 ? Math.round((stats.totalPendingConfirmation / stats.totalGuests) * 100) : 0}% dos convidados
               </p>

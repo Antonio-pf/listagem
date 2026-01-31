@@ -298,6 +298,40 @@ export async function getEventResources() {
   }
 }
 
+export async function getPendingConfirmationGuests(): Promise<Array<{ id: string; name: string }>> {
+  try {
+    // Get all guests
+    const { data: allGuests, error: guestsError } = await supabase
+      .from('guests')
+      .select('id, name')
+      .order('created_at', { ascending: false }) as { data: Array<{ id: string; name: string }> | null; error: any }
+
+    if (guestsError) throw guestsError
+
+    // Get all guest IDs who have confirmed attendance
+    const { data: confirmedAttendances, error: attendanceError } = await supabase
+      .from('event_attendance')
+      .select('guest_id') as { data: Array<{ guest_id: string }> | null; error: any }
+
+    if (attendanceError) throw attendanceError
+
+    // Create a Set of confirmed guest IDs for fast lookup
+    const confirmedGuestIds = new Set(
+      (confirmedAttendances || []).map(a => a.guest_id)
+    )
+
+    // Filter guests who haven't confirmed
+    const pendingGuests = (allGuests || []).filter(
+      guest => !confirmedGuestIds.has(guest.id)
+    )
+
+    return pendingGuests
+  } catch (error) {
+    console.error('Error fetching pending confirmation guests:', error)
+    return []
+  }
+}
+
 export function convertToCSV(data: any[], headers: string[]): string {
   if (!data || data.length === 0) {
     return headers.join(',') + '\n'
